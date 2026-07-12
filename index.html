@@ -304,7 +304,7 @@
   <div class="nav-links">
     <a href="#app">Assinar documento</a>
     <a href="#como-funciona">Como funciona</a>
-    <a href="#seguranca">Segurança</a>
+
   </div>
   <button class="btn btn-gold" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Começar agora</button>
 </nav>
@@ -312,8 +312,8 @@
 <section class="hero">
   <div>
     <div class="eyebrow">Assinatura eletrônica de documentos</div>
-    <h1 class="headline">Todo documento merece <em>uma assinatura</em> em quem confiar.</h1>
-    <p class="sub">Envie um contrato, posicione onde deseja assinar, desenhe sua assinatura e mande por e‑mail ou WhatsApp — tudo em poucos minutos, com registro de cada etapa.</p>
+    <h1 class="headline">Assine documentos <em>com confiança</em>, direto do navegador.</h1>
+    <p class="sub">Envie o arquivo, posicione a assinatura, assine e mande por e‑mail ou WhatsApp — em minutos, com registro de cada etapa.</p>
     <div class="hero-ctas">
       <button class="btn btn-gold" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Enviar meu primeiro documento</button>
       <button class="btn btn-ghost" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})">Ver como funciona</button>
@@ -338,9 +338,8 @@
 
 <div class="trust">
   <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Processamento local no navegador</div>
-  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg> Hash único por documento</div>
-  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Registro de data e hora</div>
-  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg> Envio por e‑mail ou WhatsApp</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg> Hash SHA‑256 por documento</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg> Envio por e‑mail, WhatsApp ou SMS</div>
 </div>
 
 <section class="desk" id="app">
@@ -475,7 +474,7 @@
             <div class="receipt" id="receipt"></div>
             <div class="success-actions">
               <button class="btn btn-teal" id="downloadBtn">Baixar documento assinado</button>
-              <button class="btn btn-gold" id="openChannelBtn">Abrir e‑mail com o destinatário</button>
+              <button class="btn btn-gold" id="openChannelBtn">Abrir e‑mail</button>
               <button class="btn btn-ghost" id="restartBtn">Assinar outro documento</button>
             </div>
             <p class="send-note">Por segurança, navegadores não anexam arquivos automaticamente a e‑mails ou WhatsApp. Baixe o documento e anexe-o na janela que abrirmos para você.</p>
@@ -490,53 +489,29 @@
 <section class="how" id="como-funciona">
   <div class="section-head" style="text-align:left; max-width:none;">
     <div class="eyebrow">Como funciona</div>
-    <h2>Pensado para quem nunca assinou nada digitalmente</h2>
+    <h2>Controle e registro em cada etapa</h2>
   </div>
   <div class="how-grid">
     <div class="how-card">
       <div class="num">01</div>
-      <h4>Você mantém o controle</h4>
-      <p>O documento é lido e desenhado no seu próprio navegador. Nada é enviado a um servidor até você apertar "enviar".</p>
+      <h4>Processamento local</h4>
+      <p>O documento é lido e desenhado no seu navegador. Nada é enviado a um servidor até você apertar "enviar".</p>
     </div>
     <div class="how-card">
       <div class="num">02</div>
-      <h4>Cada detalhe fica registrado</h4>
-      <p>Geramos um hash único do arquivo original e registramos data e hora, para que qualquer alteração posterior seja perceptível.</p>
+      <h4>Hash e carimbo de hora</h4>
+      <p>Um hash SHA‑256 do arquivo original é gerado localmente, junto com o horário exato de cada assinatura.</p>
     </div>
     <div class="how-card">
       <div class="num">03</div>
-      <h4>Envie do seu jeito</h4>
-      <p>E‑mail, WhatsApp ou SMS — você escolhe o canal e revisa a mensagem antes de qualquer coisa sair da sua tela.</p>
-    </div>
-  </div>
-</section>
-
-<section class="how" id="seguranca" style="padding-top:0;">
-  <div class="section-head" style="text-align:left; max-width:none;">
-    <div class="eyebrow">Segurança</div>
-    <h2>Confiança não é um detalhe visual</h2>
-  </div>
-  <div class="how-grid">
-    <div class="how-card">
-      <div class="num">◆</div>
-      <h4>Hash SHA‑256 do arquivo</h4>
-      <p>Calculado localmente a partir dos bytes originais do documento, antes de qualquer edição.</p>
-    </div>
-    <div class="how-card">
-      <div class="num">◆</div>
-      <h4>Carimbo de data e hora</h4>
-      <p>Cada assinatura recebe um registro do momento exato em que foi aplicada.</p>
-    </div>
-    <div class="how-card">
-      <div class="num">◆</div>
-      <h4>Trilha visível</h4>
-      <p>O recibo final mostra remetente, destinatário, canal escolhido e identificador do documento.</p>
+      <h4>Envio no seu canal</h4>
+      <p>E‑mail, WhatsApp ou SMS — você escolhe o canal e revisa a mensagem antes de enviar.</p>
     </div>
   </div>
 </section>
 
 <footer>
-  Protótipo de interface — o envio real por e‑mail/SMS depende de integração com um serviço de backend. Feito com carinho para quem precisa assinar algo hoje.
+  Protótipo de interface — o envio automático de e‑mail/SMS com anexo depende de integração com um serviço de backend.
 </footer>
 
 <script>
@@ -717,7 +692,12 @@
   }
 
   el('toStep2').addEventListener('click', ()=>goToStep(2));
-  el('toStep3').addEventListener('click', ()=>{ setupSignaturePad(); goToStep(3); });
+  el('toStep3').addEventListener('click', ()=>{
+    goToStep(3);
+    // o canvas precisa estar visível (painel ativo) antes de medirmos suas dimensões,
+    // senão ele é criado com tamanho 0 e o desenho não aparece — essa era a causa do bug do toque
+    requestAnimationFrame(()=>requestAnimationFrame(setupSignaturePad));
+  });
 
   // ---------- PANEL 3: SIGNATURE ----------
   const sigTabs = document.querySelectorAll('.sig-tab');
@@ -753,17 +733,26 @@
     const cy = e.touches ? e.touches[0].clientY : e.clientY;
     return {x: cx-rect.left, y: cy-rect.top};
   }
-  function startDraw(e){ drawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); }
+  function startDraw(e){
+    e.preventDefault();
+    drawing = true;
+    try{ sigCanvas.setPointerCapture(e.pointerId); }catch(err){}
+    const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y);
+  }
   function moveDraw(e){
     if(!drawing) return;
     e.preventDefault();
     const p = getPos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke();
     hasDrawn = true; validateSignature();
   }
-  function endDraw(){ drawing = false; }
+  function endDraw(e){
+    drawing = false;
+    if(e && e.pointerId!==undefined){ try{ sigCanvas.releasePointerCapture(e.pointerId); }catch(err){} }
+  }
   sigCanvas.addEventListener('pointerdown', startDraw);
   sigCanvas.addEventListener('pointermove', moveDraw);
-  window.addEventListener('pointerup', endDraw);
+  sigCanvas.addEventListener('pointerup', endDraw);
+  sigCanvas.addEventListener('pointercancel', endDraw);
 
   el('clearSig').addEventListener('click', ()=>{
     sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
@@ -859,6 +848,8 @@
   }
 
   // ---------- PANEL 4: SEND ----------
+  const channelLabels = {email:'Abrir e‑mail', whatsapp:'Abrir WhatsApp', sms:'Abrir SMS'};
+
   document.querySelectorAll('.method-chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
       document.querySelectorAll('.method-chip').forEach(c=>c.classList.remove('active'));
@@ -866,10 +857,11 @@
       state.method = chip.dataset.method;
       const label = el('recipientLabel');
       const input = el('recipientInput');
-      if(state.method === 'email'){ label.textContent = 'E‑mail do destinatário'; input.placeholder = 'nome@email.com'; }
-      else if(state.method === 'whatsapp'){ label.textContent = 'Número do WhatsApp'; input.placeholder = '(11) 91234-5678'; }
-      else { label.textContent = 'Número de celular'; input.placeholder = '(11) 91234-5678'; }
+      if(state.method === 'email'){ label.textContent = 'E‑mail do destinatário'; input.placeholder = 'nome@email.com'; input.type='text'; }
+      else if(state.method === 'whatsapp'){ label.textContent = 'Número do WhatsApp (com DDD)'; input.placeholder = '(11) 91234-5678'; input.type='tel'; }
+      else { label.textContent = 'Número de celular (com DDD)'; input.placeholder = '(11) 91234-5678'; input.type='tel'; }
       el('recipientErr').style.display = 'none';
+      el('openChannelBtn').textContent = channelLabels[state.method];
     });
   });
 
@@ -911,27 +903,46 @@
     link.click();
   });
 
+  function normalizePhone(raw){
+    let digits = raw.replace(/\D/g,'');
+    // remove leading 0 (DDD com zero) e adiciona o código do Brasil (55) se ausente
+    digits = digits.replace(/^0+/, '');
+    if(!digits.startsWith('55') || digits.length <= 11) digits = '55' + digits;
+    return digits;
+  }
+
   el('openChannelBtn').addEventListener('click', ()=>{
     const recipient = el('recipientInput').value.trim();
     const msg = el('messageInput').value.trim() || 'Segue o documento assinado.';
     if(state.method === 'email'){
       const subject = encodeURIComponent('Documento assinado — ' + (state.file ? state.file.name : ''));
       const body = encodeURIComponent(msg + '\n\n(Anexe o arquivo baixado antes de enviar.)');
-      window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_blank');
-    } else {
-      const phone = recipient.replace(/\D/g,'');
-      const text = encodeURIComponent(msg + ' (documento em anexo)');
+      window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+    } else if(state.method === 'whatsapp'){
+      const phone = normalizePhone(recipient);
+      const text = encodeURIComponent(msg + ' (anexe o documento assinado que você baixou)');
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    } else {
+      const phone = normalizePhone(recipient);
+      const body = encodeURIComponent(msg + ' (anexe o documento assinado que você baixou)');
+      window.location.href = `sms:+${phone}?body=${body}`;
     }
   });
 
   el('restartBtn').addEventListener('click', ()=>{
     state.file = null; state.fields = []; state.signatureDataURL = null; state.baseCanvas = null; state.finalCanvas = null;
+    state.method = 'email';
     el('fileChipHolder').innerHTML = '';
     el('toStep2').disabled = true;
     fileInput.value = '';
     el('recipientInput').value = '';
+    el('recipientInput').type = 'text';
     el('messageInput').value = '';
+    document.querySelectorAll('.method-chip').forEach(c=>c.classList.remove('active'));
+    document.querySelector('.method-chip[data-method="email"]').classList.add('active');
+    el('recipientLabel').textContent = 'E‑mail do destinatário';
+    el('recipientInput').placeholder = 'nome@email.com';
+    el('openChannelBtn').textContent = 'Abrir e‑mail';
     goToStep(1);
   });
 
