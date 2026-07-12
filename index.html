@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assina — assinatura de documentos com confiança</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,900;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1A2E;
+    --ink-soft:#1C2C48;
+    --paper:#EDEAE0;
+    --paper-line:#CFC7B0;
+    --paper-shadow: 0 30px 60px -25px rgba(15,26,46,0.45);
+    --gold:#B8903F;
+    --gold-soft:#E3C98A;
+    --teal:#1F6F73;
+    --teal-soft:#2E9096;
+    --text-on-paper:#1A2338;
+    --text-muted:#5B6478;
+    --danger:#B44444;
+    --radius:14px;
+    --serif:'Fraunces', serif;
+    --sans:'IBM Plex Sans', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--ink);
+    color:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    background:rgba(15,26,46,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid rgba(227,201,138,0.15);
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--serif); font-weight:600; font-size:1.3rem; letter-spacing:0.01em;}
+  .brand svg{width:26px; height:26px;}
+  .nav-links{display:flex; align-items:center; gap:32px; font-size:0.92rem; color:#C9CEDA;}
+  .nav-links a{text-decoration:none; opacity:0.85; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .btn{
+    border:none; cursor:pointer; border-radius:999px;
+    font-weight:600; font-size:0.92rem; letter-spacing:0.01em;
+    padding:12px 22px; transition:transform .15s ease, box-shadow .15s ease, background .2s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-gold{background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#1A1200; box-shadow:0 8px 20px -8px rgba(184,144,63,0.7);}
+  .btn-gold:hover{box-shadow:0 10px 26px -8px rgba(184,144,63,0.9);}
+  .btn-ghost{background:transparent; color:var(--paper); border:1px solid rgba(237,234,224,0.3);}
+  .btn-ghost:hover{border-color:rgba(237,234,224,0.6);}
+  .btn-teal{background:linear-gradient(180deg,var(--teal-soft),var(--teal)); color:#EAFBFA; box-shadow:0 8px 20px -8px rgba(31,111,115,0.6);}
+  .btn:disabled{opacity:0.4; cursor:not-allowed; box-shadow:none;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    padding:110px 40px 90px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
+    max-width:1240px; margin:0 auto;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(600px 300px at 85% 10%, rgba(31,111,115,0.25), transparent 60%),
+      radial-gradient(500px 260px at 10% 90%, rgba(184,144,63,0.18), transparent 60%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--gold-soft); display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:var(--gold-soft);}
+  h1.headline{
+    font-family:var(--serif); font-weight:600; font-size:clamp(2.4rem, 4.2vw, 3.6rem);
+    line-height:1.06; margin:0 0 22px; letter-spacing:-0.01em;
+  }
+  h1.headline em{font-style:italic; font-weight:500; color:var(--gold-soft);}
+  .hero p.sub{font-size:1.08rem; line-height:1.6; color:#C9CEDA; max-width:480px; margin:0 0 34px;}
+  .hero-ctas{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+  .hero-note{margin-top:22px; font-size:0.82rem; color:#8791A6; font-family:var(--mono);}
+
+  .signature-stage{
+    position:relative; background:var(--ink-soft); border-radius:20px; padding:40px 30px;
+    border:1px solid rgba(227,201,138,0.15);
+  }
+  .sig-doc{width:100%; height:auto; display:block;}
+  .sig-caption{text-align:center; font-family:var(--mono); font-size:0.75rem; color:#8791A6; margin-top:16px; letter-spacing:0.05em;}
+
+  /* signature draw animation */
+  .sig-path{
+    fill:none; stroke:var(--gold-soft); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:900; stroke-dashoffset:900;
+    animation:draw 2.6s 0.4s cubic-bezier(.65,.05,.36,1) forwards;
+  }
+  @keyframes draw{ to{stroke-dashoffset:0;} }
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust{
+    display:flex; justify-content:center; gap:56px; flex-wrap:wrap;
+    padding:26px 40px; border-top:1px solid rgba(227,201,138,0.12); border-bottom:1px solid rgba(227,201,138,0.12);
+    background:rgba(255,255,255,0.02);
+  }
+  .trust-item{display:flex; align-items:center; gap:10px; font-size:0.86rem; color:#C9CEDA;}
+  .trust-item svg{width:18px; height:18px; color:var(--teal-soft); flex-shrink:0;}
+
+  /* ---------- APP SECTION (desk) ---------- */
+  .desk{
+    padding:90px 24px 120px;
+    background:
+      radial-gradient(900px 500px at 50% 0%, rgba(31,111,115,0.10), transparent 60%);
+  }
+  .desk-inner{max-width:920px; margin:0 auto;}
+  .section-head{text-align:center; margin-bottom:44px;}
+  .section-head .eyebrow{justify-content:center;}
+  .section-head h2{font-family:var(--serif); font-weight:600; font-size:clamp(1.8rem,3vw,2.4rem); margin:0 0 12px;}
+  .section-head p{color:#B7BECE; max-width:480px; margin:0 auto; font-size:1rem; line-height:1.55;}
+
+  /* step indicator */
+  .steps-bar{display:flex; align-items:flex-start; justify-content:space-between; max-width:640px; margin:0 auto 44px; position:relative;}
+  .steps-bar::before{
+    content:""; position:absolute; top:19px; left:36px; right:36px; height:1px;
+    background:repeating-linear-gradient(90deg, rgba(227,201,138,0.35) 0 6px, transparent 6px 12px);
+    z-index:0;
+  }
+  .step-item{display:flex; flex-direction:column; align-items:center; gap:10px; position:relative; z-index:1; width:110px;}
+  .step-dot{
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:0.85rem; font-weight:500;
+    background:var(--ink-soft); border:1.5px solid rgba(227,201,138,0.35); color:#8791A6;
+    transition: all .3s ease;
+  }
+  .step-item.active .step-dot{background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#1A1200; border-color:transparent; box-shadow:0 0 0 4px rgba(184,144,63,0.18);}
+  .step-item.done .step-dot{background:var(--teal); color:#EAFBFA; border-color:transparent;}
+  .step-item.done .step-dot::after{content:"✓";}
+  .step-label{font-size:0.78rem; text-align:center; color:#8791A6; line-height:1.3;}
+  .step-item.active .step-label{color:var(--paper); font-weight:600;}
+
+  /* paper card */
+  .paper-card{
+    background:var(--paper); color:var(--text-on-paper); border-radius:20px;
+    box-shadow:var(--paper-shadow); padding:44px; position:relative; overflow:hidden;
+    border:1px solid rgba(0,0,0,0.04);
+  }
+  .paper-card::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:64px;
+    background:repeating-linear-gradient(180deg, transparent 0 27px, var(--paper-line) 27px 28px);
+    opacity:0.5; pointer-events:none;
+  }
+  .paper-body{position:relative; padding-left:28px;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fadeUp .45s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  .panel h3{font-family:var(--serif); font-weight:600; font-size:1.5rem; margin:0 0 6px;}
+  .panel .hint{color:var(--text-muted); font-size:0.94rem; margin:0 0 26px; line-height:1.5;}
+
+  /* dropzone */
+  .dropzone{
+    border:1.5px dashed #A79F87; border-radius:14px; padding:50px 24px; text-align:center;
+    cursor:pointer; transition: all .2s ease; background:rgba(255,255,255,0.35);
+  }
+  .dropzone.drag{border-color:var(--teal); background:rgba(31,111,115,0.07);}
+  .dropzone svg{width:40px; height:40px; color:var(--gold); margin-bottom:14px;}
+  .dropzone .dz-title{font-weight:600; font-size:1.02rem; margin-bottom:4px;}
+  .dropzone .dz-sub{font-size:0.85rem; color:var(--text-muted);}
+  .file-chip{
+    display:flex; align-items:center; gap:12px; margin-top:20px; padding:14px 16px;
+    background:#fff; border:1px solid var(--paper-line); border-radius:10px; font-size:0.9rem;
+  }
+  .file-chip svg{width:20px; height:20px; color:var(--teal); flex-shrink:0;}
+  .file-chip .name{font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .file-chip .remove{cursor:pointer; color:var(--danger); font-size:0.8rem; font-family:var(--mono); background:none; border:none;}
+
+  /* doc preview / placing */
+  .doc-stage{
+    position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--paper-line);
+    background:#fff; max-width:420px; margin:0 auto; cursor:crosshair;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,0.35);
+  }
+  .doc-stage canvas{display:block; width:100%; height:auto;}
+  .field-marker{
+    position:absolute; transform:translate(-50%,-50%);
+    display:flex; align-items:center; gap:6px;
+    padding:5px 10px; border-radius:7px; font-family:var(--mono); font-size:0.68rem;
+    background:rgba(31,111,115,0.92); color:#EAFBFA; border:1px dashed #EAFBFA;
+    cursor:pointer; user-select:none; white-space:nowrap;
+  }
+  .field-marker.signed{background:transparent; border:none; padding:0;}
+  .field-marker.signed img{max-height:46px; max-width:130px; filter:drop-shadow(0 1px 1px rgba(0,0,0,0.25));}
+  .doc-toolbar{display:flex; justify-content:space-between; align-items:center; max-width:420px; margin:16px auto 0; font-size:0.8rem; color:var(--text-muted);}
+
+  /* signature pad */
+  .sig-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .sig-tab{
+    padding:8px 16px; border-radius:8px; border:1px solid var(--paper-line); background:#fff;
+    cursor:pointer; font-size:0.85rem; color:var(--text-muted);
+  }
+  .sig-tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .sig-pad-wrap{border:1px solid var(--paper-line); border-radius:10px; background:#fff; overflow:hidden;}
+  #sigCanvas{width:100%; height:180px; display:block; touch-action:none; cursor:crosshair;}
+  .sig-pad-foot{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-top:1px solid var(--paper-line); font-size:0.78rem; color:var(--text-muted);}
+  .sig-pad-foot button{background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.78rem; font-family:var(--mono);}
+  .sig-type-input{
+    width:100%; border:1px solid var(--paper-line); border-radius:10px; padding:16px;
+    font-size:1.6rem; text-align:center; margin-bottom:14px; outline:none; background:#fff;
+  }
+  .sig-type-input:focus{border-color:var(--teal);}
+  .font-choice{display:flex; gap:10px; justify-content:center;}
+  .font-chip{padding:8px 14px; border:1px solid var(--paper-line); border-radius:8px; cursor:pointer; font-size:1.2rem; background:#fff;}
+  .font-chip.active{border-color:var(--teal); box-shadow:0 0 0 2px rgba(31,111,115,0.18);}
+
+  /* form fields */
+  .field-row{margin-bottom:18px;}
+  .field-row label{display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--text-on-paper);}
+  .field-row input, .field-row textarea{
+    width:100%; border:1px solid var(--paper-line); border-radius:9px; padding:12px 14px;
+    font-family:var(--sans); font-size:0.95rem; background:#fff; outline:none; color:var(--text-on-paper);
+  }
+  .field-row input:focus, .field-row textarea:focus{border-color:var(--teal);}
+  .method-chips{display:flex; gap:10px; flex-wrap:wrap;}
+  .method-chip{
+    padding:10px 16px; border:1px solid var(--paper-line); border-radius:999px; cursor:pointer;
+    font-size:0.85rem; display:flex; align-items:center; gap:8px; background:#fff;
+  }
+  .method-chip.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .err{color:var(--danger); font-size:0.8rem; margin-top:6px; display:none;}
+
+  .panel-actions{display:flex; justify-content:space-between; align-items:center; margin-top:32px;}
+  .panel-actions .spacer{flex:1;}
+
+  /* success */
+  .success-wrap{text-align:center; padding:10px 0 0;}
+  .success-icon{
+    width:64px; height:64px; border-radius:50%; background:var(--teal); color:#EAFBFA;
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:1.8rem;
+  }
+  .receipt{
+    text-align:left; background:#fff; border:1px solid var(--paper-line); border-radius:10px;
+    padding:20px 22px; font-family:var(--mono); font-size:0.82rem; color:var(--text-on-paper);
+    margin:26px 0; line-height:1.9;
+  }
+  .receipt .row{display:flex; justify-content:space-between; gap:20px; border-bottom:1px dashed var(--paper-line); padding:6px 0;}
+  .receipt .row:last-child{border-bottom:none;}
+  .receipt .k{color:var(--text-muted);}
+  .receipt .v{text-align:right; word-break:break-all;}
+  .success-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+  .send-note{font-size:0.8rem; color:var(--text-muted); max-width:420px; margin:18px auto 0; line-height:1.5;}
+
+  .loading-wrap{text-align:center; padding:50px 0;}
+  .spinner{
+    width:44px; height:44px; border-radius:50%; margin:0 auto 20px;
+    border:3px solid var(--paper-line); border-top-color:var(--teal);
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .how{padding:90px 40px; max-width:1080px; margin:0 auto;}
+  .how-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:50px;}
+  .how-card{padding:28px; border:1px solid rgba(227,201,138,0.15); border-radius:16px; background:rgba(255,255,255,0.02);}
+  .how-card .num{font-family:var(--mono); color:var(--gold-soft); font-size:0.8rem; margin-bottom:14px;}
+  .how-card h4{font-family:var(--serif); font-size:1.15rem; margin:0 0 10px; font-weight:600;}
+  .how-card p{font-size:0.9rem; color:#B7BECE; line-height:1.6; margin:0;}
+
+  footer{padding:40px; text-align:center; color:#6C7690; font-size:0.82rem; border-top:1px solid rgba(227,201,138,0.1);}
+
+  @media (max-width:860px){
+    .nav{padding:16px 20px;}
+    .nav-links{display:none;}
+    .hero{grid-template-columns:1fr; padding:70px 20px 60px;}
+    .trust{gap:24px; padding:22px 20px;}
+    .desk{padding:60px 16px 90px;}
+    .paper-card{padding:28px 20px;}
+    .paper-body{padding-left:0;}
+    .paper-card::before{display:none;}
+    .how{padding:60px 20px;}
+    .how-grid{grid-template-columns:1fr;}
+    .steps-bar{max-width:100%;}
+    .step-label{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 17c2-4 4-6 6-6s2 3 4 3 3-6 5-6 2 2 3 2" stroke="#E3C98A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Assina
+  </div>
+  <div class="nav-links">
+    <a href="#app">Assinar documento</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#seguranca">Segurança</a>
+  </div>
+  <button class="btn btn-gold" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Começar agora</button>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">Assinatura eletrônica de documentos</div>
+    <h1 class="headline">Todo documento merece <em>uma assinatura</em> em quem confiar.</h1>
+    <p class="sub">Envie um contrato, posicione onde deseja assinar, desenhe sua assinatura e mande por e‑mail ou WhatsApp — tudo em poucos minutos, com registro de cada etapa.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-gold" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Enviar meu primeiro documento</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})">Ver como funciona</button>
+    </div>
+    <div class="hero-note">Nenhum arquivo sai do seu navegador até você decidir enviá-lo.</div>
+  </div>
+  <div class="signature-stage">
+    <svg class="sig-doc" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="14" width="280" height="192" rx="8" fill="#F4F1E7" opacity="0.06"/>
+      <rect x="20" y="14" width="280" height="192" rx="8" stroke="#3A4666" stroke-width="1"/>
+      <line x1="42" y1="46" x2="220" y2="46" stroke="#3A4666" stroke-width="1.5"/>
+      <line x1="42" y1="64" x2="260" y2="64" stroke="#3A4666" stroke-width="1"/>
+      <line x1="42" y1="80" x2="260" y2="80" stroke="#3A4666" stroke-width="1"/>
+      <line x1="42" y1="96" x2="200" y2="96" stroke="#3A4666" stroke-width="1"/>
+      <path class="sig-path" d="M45 165 C 60 140, 75 190, 90 160 S 120 130, 135 160 S 160 185, 175 150 C 185 135, 195 175, 210 155 C 220 142, 228 160, 240 150"/>
+      <line x1="42" y1="182" x2="150" y2="182" stroke="#3A4666" stroke-width="0.8" stroke-dasharray="2 3"/>
+      <text x="42" y="196" font-family="IBM Plex Mono, monospace" font-size="7" fill="#8791A6">assinado digitalmente</text>
+    </svg>
+    <div class="sig-caption">sua assinatura, do seu jeito</div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Processamento local no navegador</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg> Hash único por documento</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Registro de data e hora</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg> Envio por e‑mail ou WhatsApp</div>
+</div>
+
+<section class="desk" id="app">
+  <div class="desk-inner">
+    <div class="section-head">
+      <div class="eyebrow">Sua mesa de assinaturas</div>
+      <h2>Quatro passos até o documento assinado</h2>
+      <p>Suba o arquivo, marque o lugar da assinatura, assine e escolha para onde enviar.</p>
+    </div>
+
+    <div class="steps-bar" id="stepsBar">
+      <div class="step-item" data-step="1"><div class="step-dot">1</div><div class="step-label">Enviar<br>documento</div></div>
+      <div class="step-item" data-step="2"><div class="step-dot">2</div><div class="step-label">Posicionar<br>assinatura</div></div>
+      <div class="step-item" data-step="3"><div class="step-dot">3</div><div class="step-label">Assinar</div></div>
+      <div class="step-item" data-step="4"><div class="step-dot">4</div><div class="step-label">Enviar</div></div>
+    </div>
+
+    <div class="paper-card">
+      <div class="paper-body">
+
+        <!-- PANEL 1: UPLOAD -->
+        <div class="panel active" id="panel-1">
+          <h3>Envie o documento</h3>
+          <p class="hint">Aceitamos PDF, JPG ou PNG. O arquivo é lido apenas no seu navegador.</p>
+          <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <div class="dz-title">Arraste o arquivo aqui</div>
+            <div class="dz-sub">ou clique para escolher — PDF, JPG ou PNG</div>
+            <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" style="display:none">
+          </div>
+          <div id="fileChipHolder"></div>
+          <div class="panel-actions">
+            <div class="spacer"></div>
+            <button class="btn btn-teal" id="toStep2" disabled>Continuar</button>
+          </div>
+        </div>
+
+        <!-- PANEL 2: PLACE FIELD -->
+        <div class="panel" id="panel-2">
+          <h3>Onde você quer assinar?</h3>
+          <p class="hint">Clique no documento para marcar o local da assinatura. Clique numa marcação para removê-la.</p>
+          <div class="doc-stage" id="docStage">
+            <canvas id="docCanvas"></canvas>
+          </div>
+          <div class="doc-toolbar">
+            <span id="fieldCount">0 marcação adicionada</span>
+            <span id="pdfPageInfo"></span>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-ghost" onclick="goToStep(1)">Voltar</button>
+            <button class="btn btn-teal" id="toStep3" disabled>Continuar</button>
+          </div>
+        </div>
+
+        <!-- PANEL 3: SIGN -->
+        <div class="panel" id="panel-3">
+          <h3>Desenhe ou digite sua assinatura</h3>
+          <p class="hint">Ela será aplicada em todas as marcações que você posicionou.</p>
+          <div class="sig-tabs">
+            <div class="sig-tab active" data-tab="draw">Desenhar</div>
+            <div class="sig-tab" data-tab="type">Digitar</div>
+          </div>
+          <div id="sigDraw">
+            <div class="sig-pad-wrap">
+              <canvas id="sigCanvas"></canvas>
+              <div class="sig-pad-foot">
+                <span>Use o mouse ou o dedo para assinar</span>
+                <button id="clearSig">limpar</button>
+              </div>
+            </div>
+          </div>
+          <div id="sigType" style="display:none;">
+            <input type="text" id="sigTypeInput" class="sig-type-input" placeholder="Seu nome" style="font-family:'Caveat',cursive;">
+            <div class="font-choice">
+              <div class="font-chip active" data-font="Caveat" style="font-family:'Caveat',cursive;">Assinatura</div>
+              <div class="font-chip" data-font="Sacramento" style="font-family:'Sacramento',cursive;">Assinatura</div>
+            </div>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-ghost" onclick="goToStep(2)">Voltar</button>
+            <button class="btn btn-teal" id="toStep4" disabled>Aplicar e continuar</button>
+          </div>
+        </div>
+
+        <!-- PANEL 4: SEND -->
+        <div class="panel" id="panel-4">
+          <h3>Para onde enviamos?</h3>
+          <p class="hint">Escolha o método de envio e confira o documento assinado antes de mandar.</p>
+
+          <div class="doc-stage" id="finalStage" style="margin-bottom:24px;">
+            <canvas id="finalCanvas"></canvas>
+          </div>
+
+          <div class="field-row">
+            <label>Método de envio</label>
+            <div class="method-chips">
+              <div class="method-chip active" data-method="email">✉️ E‑mail</div>
+              <div class="method-chip" data-method="whatsapp">💬 WhatsApp</div>
+              <div class="method-chip" data-method="sms">📱 SMS</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <label id="recipientLabel">E‑mail do destinatário</label>
+            <input type="text" id="recipientInput" placeholder="nome@email.com">
+            <div class="err" id="recipientErr">Confira o formato antes de continuar.</div>
+          </div>
+          <div class="field-row">
+            <label>Mensagem (opcional)</label>
+            <textarea id="messageInput" rows="3" placeholder="Segue o documento para sua assinatura."></textarea>
+          </div>
+
+          <div class="panel-actions">
+            <button class="btn btn-ghost" onclick="goToStep(3)">Voltar</button>
+            <button class="btn btn-gold" id="sendBtn">Enviar documento</button>
+          </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="panel" id="panel-loading">
+          <div class="loading-wrap">
+            <div class="spinner"></div>
+            <p>Selando e preparando o envio…</p>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="panel" id="panel-success">
+          <div class="success-wrap">
+            <div class="success-icon">✓</div>
+            <h3>Documento pronto para envio</h3>
+            <p class="hint">Confira o recibo abaixo. Ele acompanha o documento assinado.</p>
+            <div class="receipt" id="receipt"></div>
+            <div class="success-actions">
+              <button class="btn btn-teal" id="downloadBtn">Baixar documento assinado</button>
+              <button class="btn btn-gold" id="openChannelBtn">Abrir e‑mail com o destinatário</button>
+              <button class="btn btn-ghost" id="restartBtn">Assinar outro documento</button>
+            </div>
+            <p class="send-note">Por segurança, navegadores não anexam arquivos automaticamente a e‑mails ou WhatsApp. Baixe o documento e anexe-o na janela que abrirmos para você.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="como-funciona">
+  <div class="section-head" style="text-align:left; max-width:none;">
+    <div class="eyebrow">Como funciona</div>
+    <h2>Pensado para quem nunca assinou nada digitalmente</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="num">01</div>
+      <h4>Você mantém o controle</h4>
+      <p>O documento é lido e desenhado no seu próprio navegador. Nada é enviado a um servidor até você apertar "enviar".</p>
+    </div>
+    <div class="how-card">
+      <div class="num">02</div>
+      <h4>Cada detalhe fica registrado</h4>
+      <p>Geramos um hash único do arquivo original e registramos data e hora, para que qualquer alteração posterior seja perceptível.</p>
+    </div>
+    <div class="how-card">
+      <div class="num">03</div>
+      <h4>Envie do seu jeito</h4>
+      <p>E‑mail, WhatsApp ou SMS — você escolhe o canal e revisa a mensagem antes de qualquer coisa sair da sua tela.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="seguranca" style="padding-top:0;">
+  <div class="section-head" style="text-align:left; max-width:none;">
+    <div class="eyebrow">Segurança</div>
+    <h2>Confiança não é um detalhe visual</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="num">◆</div>
+      <h4>Hash SHA‑256 do arquivo</h4>
+      <p>Calculado localmente a partir dos bytes originais do documento, antes de qualquer edição.</p>
+    </div>
+    <div class="how-card">
+      <div class="num">◆</div>
+      <h4>Carimbo de data e hora</h4>
+      <p>Cada assinatura recebe um registro do momento exato em que foi aplicada.</p>
+    </div>
+    <div class="how-card">
+      <div class="num">◆</div>
+      <h4>Trilha visível</h4>
+      <p>O recibo final mostra remetente, destinatário, canal escolhido e identificador do documento.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Protótipo de interface — o envio real por e‑mail/SMS depende de integração com um serviço de backend. Feito com carinho para quem precisa assinar algo hoje.
+</footer>
+
+<script>
+(function(){
+  // ---------- STATE ----------
+  const state = {
+    step: 1,
+    file: null,
+    fileHash: null,
+    baseCanvas: null,     // canvas with the document rendered
+    fields: [],            // {id, xPct, yPct}
+    signatureDataURL: null,
+    signatureLabel: '',
+    finalCanvas: null,
+    method: 'email',
+  };
+
+  const el = (id) => document.getElementById(id);
+  const panels = ['1','2','3','4','loading','success'].reduce((a,k)=>{a[k]=el('panel-'+k); return a;},{});
+
+  function goToStep(n){
+    state.step = n;
+    Object.values(panels).forEach(p=>p.classList.remove('active'));
+    panels[String(n)].classList.add('active');
+    document.querySelectorAll('.step-item').forEach(item=>{
+      const s = parseInt(item.dataset.step);
+      item.classList.remove('active','done');
+      if(s < n) item.classList.add('done');
+      if(s === n) item.classList.add('active');
+    });
+    if(n===2) requestAnimationFrame(renderDocStage);
+  }
+  window.goToStep = goToStep;
+
+  // ---------- UPLOAD ----------
+  const dropzone = el('dropzone');
+  const fileInput = el('fileInput');
+  dropzone.addEventListener('click', ()=>fileInput.click());
+  ['dragenter','dragover'].forEach(evt=>dropzone.addEventListener(evt, e=>{e.preventDefault(); dropzone.classList.add('drag');}));
+  ['dragleave','drop'].forEach(evt=>dropzone.addEventListener(evt, e=>{e.preventDefault(); dropzone.classList.remove('drag');}));
+  dropzone.addEventListener('drop', e=>{
+    if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e=>{
+    if(e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  async function handleFile(file){
+    state.file = file;
+    state.fields = [];
+    state.signatureDataURL = null;
+
+    // compute a real SHA-256 hash of the file bytes
+    try{
+      const buf = await file.arrayBuffer();
+      const digest = await crypto.subtle.digest('SHA-256', buf);
+      state.fileHash = [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+    }catch(err){
+      state.fileHash = 'indisponível neste navegador';
+    }
+
+    el('fileChipHolder').innerHTML = `
+      <div class="file-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+        <span class="name">${escapeHtml(file.name)}</span>
+        <button class="remove" id="removeFile">remover</button>
+      </div>`;
+    el('removeFile').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      state.file = null;
+      el('fileChipHolder').innerHTML = '';
+      el('toStep2').disabled = true;
+      fileInput.value = '';
+    });
+    el('toStep2').disabled = false;
+    await buildBaseCanvas(file);
+  }
+
+  function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
+
+  // ---------- BUILD DOCUMENT PREVIEW ----------
+  async function buildBaseCanvas(file){
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if(file.type === 'application/pdf' && window.pdfjsLib){
+      try{
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({scale:1.6});
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({canvasContext:ctx, viewport}).promise;
+        el('pdfPageInfo').textContent = `PDF · página 1 de ${pdf.numPages}`;
+        state.baseCanvas = canvas;
+        return;
+      }catch(err){ /* fall through to mock */ }
+    }
+
+    if(file.type.startsWith('image/')){
+      const img = await loadImage(file);
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img,0,0);
+      el('pdfPageInfo').textContent = 'imagem';
+      state.baseCanvas = canvas;
+      return;
+    }
+
+    // fallback mock page (e.g. pdf.js unavailable)
+    canvas.width = 620; canvas.height = 800;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = '#D8D2C0'; ctx.lineWidth = 1;
+    for(let y=90; y<720; y+=28){ ctx.beginPath(); ctx.moveTo(50,y); ctx.lineTo(canvas.width-90 - Math.random()*80, y); ctx.stroke(); }
+    ctx.fillStyle = '#1A2338'; ctx.font = '600 22px IBM Plex Sans, sans-serif';
+    ctx.fillText(file.name.slice(0,34), 50, 56);
+    ctx.fillStyle = '#8791A6'; ctx.font = '13px IBM Plex Mono, monospace';
+    ctx.fillText('pré-visualização gerada localmente', 50, 78);
+    el('pdfPageInfo').textContent = 'pré-visualização';
+    state.baseCanvas = canvas;
+  }
+
+  function loadImage(file){
+    return new Promise((res,rej)=>{
+      const img = new Image();
+      img.onload = ()=>res(img);
+      img.onerror = rej;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // ---------- PANEL 2: PLACE FIELDS ----------
+  const docStage = el('docStage');
+  const docCanvas = el('docCanvas');
+
+  function renderDocStage(){
+    if(!state.baseCanvas) return;
+    docCanvas.width = state.baseCanvas.width;
+    docCanvas.height = state.baseCanvas.height;
+    docCanvas.getContext('2d').drawImage(state.baseCanvas,0,0);
+    document.querySelectorAll('.field-marker').forEach(m=>m.remove());
+    state.fields.forEach(f=>addMarkerDOM(f));
+    updateFieldCount();
+  }
+
+  docStage.addEventListener('click', (e)=>{
+    if(e.target.closest('.field-marker')) return;
+    const rect = docStage.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width * 100;
+    const yPct = (e.clientY - rect.top) / rect.height * 100;
+    if(state.fields.length >= 5) return;
+    const field = {id: 'f'+Date.now(), xPct, yPct};
+    state.fields.push(field);
+    addMarkerDOM(field);
+    updateFieldCount();
+  });
+
+  function addMarkerDOM(field){
+    const m = document.createElement('div');
+    m.className = 'field-marker';
+    m.style.left = field.xPct + '%';
+    m.style.top = field.yPct + '%';
+    m.innerHTML = '✒️ assinatura aqui';
+    m.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      state.fields = state.fields.filter(f=>f.id !== field.id);
+      m.remove();
+      updateFieldCount();
+    });
+    docStage.appendChild(m);
+  }
+
+  function updateFieldCount(){
+    const n = state.fields.length;
+    el('fieldCount').textContent = n===0 ? '0 marcação adicionada' : (n===1 ? '1 marcação adicionada' : n+' marcações adicionadas');
+    el('toStep3').disabled = n===0;
+  }
+
+  el('toStep2').addEventListener('click', ()=>goToStep(2));
+  el('toStep3').addEventListener('click', ()=>{ setupSignaturePad(); goToStep(3); });
+
+  // ---------- PANEL 3: SIGNATURE ----------
+  const sigTabs = document.querySelectorAll('.sig-tab');
+  sigTabs.forEach(tab=>tab.addEventListener('click', ()=>{
+    sigTabs.forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const isDraw = tab.dataset.tab === 'draw';
+    el('sigDraw').style.display = isDraw ? 'block' : 'none';
+    el('sigType').style.display = isDraw ? 'none' : 'block';
+    validateSignature();
+  }));
+
+  const sigCanvas = el('sigCanvas');
+  let sigCtx, drawing = false, hasDrawn = false;
+
+  function setupSignaturePad(){
+    const ratio = window.devicePixelRatio || 1;
+    const rect = sigCanvas.getBoundingClientRect();
+    sigCanvas.width = rect.width * ratio;
+    sigCanvas.height = 180 * ratio;
+    sigCtx = sigCanvas.getContext('2d');
+    sigCtx.scale(ratio, ratio);
+    sigCtx.strokeStyle = '#0F1A2E';
+    sigCtx.lineWidth = 2.4;
+    sigCtx.lineCap = 'round';
+    sigCtx.lineJoin = 'round';
+    hasDrawn = false;
+  }
+
+  function getPos(e){
+    const rect = sigCanvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return {x: cx-rect.left, y: cy-rect.top};
+  }
+  function startDraw(e){ drawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); }
+  function moveDraw(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const p = getPos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke();
+    hasDrawn = true; validateSignature();
+  }
+  function endDraw(){ drawing = false; }
+  sigCanvas.addEventListener('pointerdown', startDraw);
+  sigCanvas.addEventListener('pointermove', moveDraw);
+  window.addEventListener('pointerup', endDraw);
+
+  el('clearSig').addEventListener('click', ()=>{
+    sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+    hasDrawn = false; validateSignature();
+  });
+
+  const sigTypeInput = el('sigTypeInput');
+  let activeFont = 'Caveat';
+  document.querySelectorAll('.font-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.font-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFont = chip.dataset.font;
+      sigTypeInput.style.fontFamily = `'${activeFont}', cursive`;
+      validateSignature();
+    });
+  });
+  sigTypeInput.addEventListener('input', validateSignature);
+
+  function validateSignature(){
+    const isDraw = document.querySelector('.sig-tab.active').dataset.tab === 'draw';
+    const ok = isDraw ? hasDrawn : sigTypeInput.value.trim().length > 0;
+    el('toStep4').disabled = !ok;
+  }
+
+  el('toStep4').addEventListener('click', ()=>{
+    const isDraw = document.querySelector('.sig-tab.active').dataset.tab === 'draw';
+    if(isDraw){
+      state.signatureDataURL = sigCanvas.toDataURL('image/png');
+      state.signatureLabel = 'assinatura desenhada';
+      finalizeAndGo();
+    } else {
+      renderTypedSignature(sigTypeInput.value.trim(), activeFont).then(url=>{
+        state.signatureDataURL = url;
+        state.signatureLabel = 'assinatura digitada';
+        finalizeAndGo();
+      });
+    }
+  });
+
+  function renderTypedSignature(text, font){
+    return new Promise(resolve=>{
+      const c = document.createElement('canvas');
+      c.width = 500; c.height = 160;
+      const ctx = c.getContext('2d');
+      document.fonts.load(`60px ${font}`).finally(()=>{
+        ctx.clearRect(0,0,c.width,c.height);
+        ctx.fillStyle = '#0F1A2E';
+        ctx.font = `60px '${font}', cursive`;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 20, 90);
+        resolve(c.toDataURL('image/png'));
+      });
+    });
+  }
+
+  function finalizeAndGo(){
+    stampSignature();
+    goToStep(4);
+  }
+
+  // ---------- STAMP SIGNATURE ONTO DOCUMENT ----------
+  function stampSignature(){
+    const out = document.createElement('canvas');
+    out.width = state.baseCanvas.width;
+    out.height = state.baseCanvas.height;
+    const ctx = out.getContext('2d');
+    ctx.drawImage(state.baseCanvas,0,0);
+
+    const sigImg = new Image();
+    sigImg.onload = ()=>{
+      const targetW = out.width * 0.24;
+      const targetH = targetW * (sigImg.height/sigImg.width);
+      state.fields.forEach(f=>{
+        const x = (f.xPct/100)*out.width - targetW/2;
+        const y = (f.yPct/100)*out.height - targetH/2;
+        ctx.drawImage(sigImg, x, y, targetW, targetH);
+        ctx.font = `${Math.max(10,out.width*0.014)}px IBM Plex Mono, monospace`;
+        ctx.fillStyle = '#5B6478';
+        ctx.fillText('assinado em ' + new Date().toLocaleDateString('pt-BR'), x, y+targetH+14);
+      });
+      state.finalCanvas = out;
+      renderFinalStage();
+    };
+    sigImg.src = state.signatureDataURL;
+  }
+
+  function renderFinalStage(){
+    const finalCanvas = el('finalCanvas');
+    finalCanvas.width = state.finalCanvas.width;
+    finalCanvas.height = state.finalCanvas.height;
+    finalCanvas.getContext('2d').drawImage(state.finalCanvas,0,0);
+  }
+
+  // ---------- PANEL 4: SEND ----------
+  document.querySelectorAll('.method-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.method-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      state.method = chip.dataset.method;
+      const label = el('recipientLabel');
+      const input = el('recipientInput');
+      if(state.method === 'email'){ label.textContent = 'E‑mail do destinatário'; input.placeholder = 'nome@email.com'; }
+      else if(state.method === 'whatsapp'){ label.textContent = 'Número do WhatsApp'; input.placeholder = '(11) 91234-5678'; }
+      else { label.textContent = 'Número de celular'; input.placeholder = '(11) 91234-5678'; }
+      el('recipientErr').style.display = 'none';
+    });
+  });
+
+  function validRecipient(){
+    const v = el('recipientInput').value.trim();
+    if(state.method === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    return v.replace(/\D/g,'').length >= 10;
+  }
+
+  el('sendBtn').addEventListener('click', ()=>{
+    if(!validRecipient()){
+      el('recipientErr').style.display = 'block';
+      return;
+    }
+    el('recipientErr').style.display = 'none';
+    goToStep('loading');
+    setTimeout(buildReceiptAndShowSuccess, 1400);
+  });
+
+  function buildReceiptAndShowSuccess(){
+    const recipient = el('recipientInput').value.trim();
+    const now = new Date();
+    const receiptHtml = `
+      <div class="row"><span class="k">documento</span><span class="v">${escapeHtml(state.file ? state.file.name : '—')}</span></div>
+      <div class="row"><span class="k">hash (sha-256, 32 chars)</span><span class="v">${state.fileHash}</span></div>
+      <div class="row"><span class="k">assinaturas aplicadas</span><span class="v">${state.fields.length}</span></div>
+      <div class="row"><span class="k">carimbo de data/hora</span><span class="v">${now.toLocaleString('pt-BR')}</span></div>
+      <div class="row"><span class="k">canal</span><span class="v">${state.method === 'email' ? 'e-mail' : state.method === 'whatsapp' ? 'whatsapp' : 'sms'}</span></div>
+      <div class="row"><span class="k">destinatário</span><span class="v">${escapeHtml(recipient)}</span></div>
+    `;
+    el('receipt').innerHTML = receiptHtml;
+    goToStep('success');
+  }
+
+  el('downloadBtn').addEventListener('click', ()=>{
+    const link = document.createElement('a');
+    link.download = (state.file ? state.file.name.replace(/\.[^.]+$/,'') : 'documento') + '-assinado.png';
+    link.href = state.finalCanvas.toDataURL('image/png');
+    link.click();
+  });
+
+  el('openChannelBtn').addEventListener('click', ()=>{
+    const recipient = el('recipientInput').value.trim();
+    const msg = el('messageInput').value.trim() || 'Segue o documento assinado.';
+    if(state.method === 'email'){
+      const subject = encodeURIComponent('Documento assinado — ' + (state.file ? state.file.name : ''));
+      const body = encodeURIComponent(msg + '\n\n(Anexe o arquivo baixado antes de enviar.)');
+      window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_blank');
+    } else {
+      const phone = recipient.replace(/\D/g,'');
+      const text = encodeURIComponent(msg + ' (documento em anexo)');
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    }
+  });
+
+  el('restartBtn').addEventListener('click', ()=>{
+    state.file = null; state.fields = []; state.signatureDataURL = null; state.baseCanvas = null; state.finalCanvas = null;
+    el('fileChipHolder').innerHTML = '';
+    el('toStep2').disabled = true;
+    fileInput.value = '';
+    el('recipientInput').value = '';
+    el('messageInput').value = '';
+    goToStep(1);
+  });
+
+  goToStep(1);
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+</body>
+</html>
