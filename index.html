@@ -1279,4 +1279,21 @@
 })();
 </script>
 </body>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO",
+    projectId: "SEU_ID",
+    storageBucket: "SEU_BUCKET",
+    messagingSenderId: "SEU_ID",
+    appId: "SEU_APP_ID",
+    measurementId: "SEU_ID_MEDICAO"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
 </html>
