@@ -19,6 +19,7 @@
     --wax:#7a2320;
     --wax-dark:#5c1a18;
     --green:#2f6b52;
+    --red:#a53a3a;
     --ink-text:#0c1526;
     --muted:#8b93a7;
     --line: rgba(250,247,240,0.14);
@@ -40,6 +41,7 @@
     color: var(--paper);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    min-height:100vh;
   }
   ::selection{ background: var(--gold); color: var(--ink-950); }
   a{color:inherit;}
@@ -69,6 +71,13 @@
     transition: transform .15s ease, box-shadow .15s ease;
   }
   .cta-small:hover{ transform: translateY(-1px); box-shadow:0 8px 20px -6px rgba(185,144,90,0.6); }
+
+  /* ---------- banner ---------- */
+  .publish-banner{
+    background: linear-gradient(90deg, rgba(185,144,90,0.14), rgba(47,107,82,0.10));
+    border-bottom:1px solid var(--line); font-size:0.85rem; padding:10px 28px; text-align:center; color:#e8dfca;
+  }
+  .publish-banner strong{ color: var(--gold-bright); }
 
   /* ---------- hero ---------- */
   .hero{ padding:88px 0 60px; }
@@ -101,8 +110,6 @@
   }
   .btn-ghost:hover{ border-color: rgba(250,247,240,0.4); }
 
-  /* hero visual: document + wax seal drop */
-  .hero-visual{ position:relative; display:flex; justify-content:center; }
   .doc-mock{
     width:300px; background:var(--paper); color:var(--ink-text); border-radius:6px;
     box-shadow: var(--shadow-lg);
@@ -114,6 +121,7 @@
   .doc-mock .doc-line{ height:8px; background:rgba(12,21,38,0.10); border-radius:2px; margin-bottom:12px; }
   .doc-mock .doc-line.w60{width:60%;} .doc-mock .doc-line.w80{width:80%;} .doc-mock .doc-line.w40{width:40%;}
   .doc-mock .doc-title{ font-family:var(--font-display); font-size:1.1rem; font-weight:600; margin-bottom:18px; color:var(--ink-900); }
+  .hero-visual{ position:relative; display:flex; justify-content:center; }
   .seal-drop{
     position:absolute; right:26px; bottom:30px; width:86px; height:86px; border-radius:50%;
     background: radial-gradient(circle at 35% 30%, var(--gold-bright), var(--wax) 60%, var(--wax-dark));
@@ -137,7 +145,6 @@
   }
   @keyframes inkReveal{ 0%,40%{opacity:0;} 55%{opacity:1;} 90%{opacity:1;} 100%{opacity:1;} }
 
-  /* trust strip */
   .trust-strip{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:26px 0; }
   .trust-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
   .trust-item{ display:flex; gap:12px; align-items:flex-start; }
@@ -174,7 +181,6 @@
   .panel h3{ font-family:var(--font-display); font-size:1.5rem; font-weight:600; margin:0 0 8px; }
   .panel > p.hint{ color:var(--muted); font-size:0.92rem; margin:0 0 26px; line-height:1.55; }
 
-  /* dropzone */
   .dropzone{
     border:1.5px dashed rgba(250,247,240,0.28); border-radius:16px; padding:54px 30px;
     text-align:center; cursor:pointer; transition: border-color .2s, background .2s;
@@ -190,13 +196,12 @@
   }
   .file-chip button{ background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; }
 
-  /* document stage */
   .stage-wrap{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
-  #docStage{
+  .doc-stage{
     position:relative; background:var(--paper); border-radius:8px; overflow:hidden; box-shadow: var(--shadow-lg);
     max-width:100%; line-height:0;
   }
-  #docStage canvas{ display:block; max-width:100%; height:auto; }
+  .doc-stage canvas{ display:block; max-width:100%; height:auto; }
   .stage-instructions{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
     background:rgba(12,21,38,0.5); color:var(--paper); font-size:0.92rem; padding:20px; pointer-events:none;
@@ -208,6 +213,7 @@
     touch-action:none;
   }
   .sig-box.placed{ display:flex; }
+  .sig-box.readonly{ cursor:default; }
   .sig-box .sig-label{ font-family:var(--font-mono); font-size:0.7rem; color:var(--gold-bright); pointer-events:none;}
   .sig-box img{ width:100%; height:100%; object-fit:contain; pointer-events:none; }
   .sig-box .handle{
@@ -219,17 +225,17 @@
   .page-nav button{ background:var(--ink-950); border:1px solid var(--line); color:var(--paper); width:30px; height:30px; border-radius:8px; cursor:pointer; }
   .page-nav button:disabled{ opacity:0.3; cursor:not-allowed; }
   .note-box{ background:var(--ink-950); border:1px solid var(--line); border-radius:12px; padding:16px 18px; font-size:0.86rem; color:#c9cfdd; line-height:1.55; }
-  .note-box strong{ color:var(--gold-bright); }
+  .note-box strong{ color: var(--gold-bright); }
+  .note-box.warn{ border-color: var(--red); }
 
   .row-actions{ display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
   button:disabled{ opacity:0.4; cursor:not-allowed; }
 
-  /* signature pad panel */
   .tabs{ display:flex; gap:6px; background:var(--ink-950); border:1px solid var(--line); border-radius:10px; padding:4px; width:max-content; margin-bottom:22px; }
   .tab-btn{ background:none; border:none; color:var(--muted); padding:9px 18px; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; font-family:var(--font-body); }
   .tab-btn.active{ background:var(--gold); color:var(--ink-950); }
   .sig-pad-wrap{ background:var(--paper); border-radius:12px; padding:0; overflow:hidden; box-shadow:var(--shadow-lg); }
-  #padCanvas{ display:block; width:100%; height:220px; cursor:crosshair; touch-action:none; }
+  .sig-pad-canvas{ display:block; width:100%; height:220px; cursor:crosshair; touch-action:none; }
   .type-wrap{ background:var(--paper); border-radius:12px; padding:34px; box-shadow:var(--shadow-lg); text-align:center; }
   .type-wrap input{
     width:100%; border:none; border-bottom:2px solid var(--ink-900); background:transparent; text-align:center;
@@ -237,7 +243,6 @@
   }
   .type-wrap p{ margin:14px 0 0; font-size:0.8rem; color:#7c8394; font-family:var(--font-body); }
 
-  /* recipient / seal */
   .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:560px; margin-bottom:8px; }
   .field{ display:flex; flex-direction:column; gap:7px; }
   .field label{ font-size:0.82rem; color:var(--muted); }
@@ -276,6 +281,52 @@
 
   footer{ border-top:1px solid var(--line); padding:36px 0; text-align:center; color:var(--muted); font-size:0.82rem; }
 
+  /* choice cards */
+  .choice-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:680px; margin-bottom:8px; }
+  .choice-card{
+    text-align:left; background:var(--ink-950); border:1px solid var(--line); border-radius:14px; padding:24px;
+    cursor:pointer; color:var(--paper); transition: border-color .15s, transform .15s;
+  }
+  .choice-card:hover{ border-color:var(--gold-bright); transform: translateY(-2px); }
+  .choice-card h4{ margin:0 0 8px; font-family:var(--font-display); font-size:1.1rem; }
+  .choice-card p{ margin:0; font-size:0.85rem; color:var(--muted); line-height:1.5; }
+  .choice-card .ic{ color:var(--gold-bright); margin-bottom:12px; display:block; }
+
+  /* link result */
+  .link-box{
+    display:flex; align-items:center; gap:10px; background:var(--ink-950); border:1px solid var(--line);
+    padding:14px 16px; border-radius:10px; font-family:var(--font-mono); font-size:0.82rem; word-break:break-all;
+  }
+  .status-pill{ display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; }
+  .status-dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); animation: pulse 1.6s ease infinite; }
+  .status-dot.signed{ background: var(--green); animation:none; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .sent-doc-row{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; background:var(--ink-950);
+    border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .sent-doc-row .name{ font-weight:600; font-size:0.92rem; }
+  .sent-doc-row .meta{ font-size:0.76rem; color:var(--muted); font-family:var(--font-mono); }
+  .sent-doc-row .actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .mini-btn{
+    font-family:var(--font-body); font-size:0.78rem; font-weight:600; background:var(--ink-800); color:var(--paper);
+    border:1px solid var(--line); padding:7px 12px; border-radius:8px; cursor:pointer;
+  }
+  .mini-btn:hover{ border-color:var(--gold-bright); }
+
+  /* signer view */
+  #signerView{ display:none; min-height:100vh; }
+  .signer-shell{ max-width:760px; margin:0 auto; padding:60px 28px 80px; }
+  .signer-card{ background:var(--ink-800); border:1px solid var(--line); border-radius:20px; padding:36px 40px; }
+  .signer-card h2{ font-family:var(--font-display); font-size:1.8rem; margin:0 0 10px; }
+  .signer-card > p{ color:#c9cfdd; margin:0 0 28px; line-height:1.55; }
+  .signer-done-icon{
+    width:64px; height:64px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-bright), var(--wax) 60%, var(--wax-dark));
+    display:flex; align-items:center; justify-content:center; margin-bottom:20px;
+  }
+
   @media (max-width: 880px){
     .hero-grid{ grid-template-columns:1fr; }
     .hero-visual{ margin-top:20px; }
@@ -285,15 +336,18 @@
     .rail-line{ display:none; }
     .panel-area{ padding:28px 20px 36px; }
     .form-grid{ grid-template-columns:1fr; }
+    .choice-grid{ grid-template-columns:1fr; }
     nav.top-links{ display:none; }
+    .signer-card{ padding:26px 22px; }
   }
   @media (prefers-reduced-motion: reduce){
-    .seal-drop, .ink-signature{ animation:none !important; }
+    .seal-drop, .ink-signature, .status-dot{ animation:none !important; }
   }
 </style>
 </head>
 <body>
 
+<div id="mainApp">
 <header class="top">
   <div class="topbar">
     <div class="brand"><span class="seal-mini"></span> Selo</div>
@@ -308,9 +362,9 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow">Processamento 100% local no navegador</div>
+      <div class="eyebrow">Processamento local · link de assinatura remota</div>
       <h1 class="display">Assine documentos com a <em>confiança de um cartório</em>, na velocidade de um clique.</h1>
-      <p class="lead">Envie o PDF, toque no lugar exato onde sua assinatura deve aparecer, desenhe seu traço e mande por e-mail em minutos. Sem cadastro, sem enviar seu arquivo para servidor nenhum.</p>
+      <p class="lead">Envie o PDF, posicione o campo de assinatura e escolha: assine você mesmo agora, ou gere um link — a outra pessoa abre, já vê o documento pronto, e só assina.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="document.getElementById('workspace').scrollIntoView({behavior:'smooth'})">Começar a assinar →</button>
         <button class="btn-ghost" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})">Ver como funciona</button>
@@ -336,27 +390,19 @@
 <section class="trust-strip" id="seguranca">
   <div class="wrap trust-grid">
     <div class="trust-item">
-      <span class="ic">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
-      </span>
-      <div><h4>Seu arquivo não sai do navegador</h4><p>Documento e assinatura são processados localmente, na sua máquina.</p></div>
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></span>
+      <div><h4>Nada sai sem você saber</h4><p>O documento só é guardado quando você gera um link de assinatura — o resto é só no seu navegador.</p></div>
     </div>
     <div class="trust-item">
-      <span class="ic">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg>
-      </span>
-      <div><h4>Sem cadastro</h4><p>Nenhuma conta, senha ou dado pessoal armazenado em servidor.</p></div>
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg></span>
+      <div><h4>Sem cadastro</h4><p>Nenhuma conta ou senha — nem para você, nem para quem assina.</p></div>
     </div>
     <div class="trust-item">
-      <span class="ic">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      </span>
-      <div><h4>Pronto em minutos</h4><p>Posicione, assine e envie sem instalar nada.</p></div>
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+      <div><h4>Quem assina, só assina</h4><p>A pessoa abre o link e já vê o documento posicionado — um clique e está feito.</p></div>
     </div>
     <div class="trust-item">
-      <span class="ic">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.4 5 5.6.6-4.1 3.9 1 5.5L12 14l-4.9 3 1-5.5-4.1-3.9L9.6 7z"/></svg>
-      </span>
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.4 5 5.6.6-4.1 3.9 1 5.5L12 14l-4.9 3 1-5.5-4.1-3.9L9.6 7z"/></svg></span>
       <div><h4>Protocolo de verificação</h4><p>Todo documento assinado recebe um código e carimbo de data/hora.</p></div>
     </div>
   </div>
@@ -366,31 +412,19 @@
   <div class="wrap">
     <div class="section-head" id="como-funciona">
       <div class="eyebrow">Fluxo de assinatura</div>
-      <h2>Quatro passos, um documento assinado.</h2>
+      <h2>Poucos passos, um documento assinado.</h2>
       <p>Siga a ordem à esquerda — cada etapa libera a próxima.</p>
     </div>
 
     <div class="studio">
       <div class="rail">
-        <div class="rail-step active" data-step="1">
-          <div class="rail-num">01</div>
-          <div><h5>Enviar documento</h5><p>PDF, PNG ou JPG</p></div>
-        </div>
+        <div class="rail-step active" data-step="1"><div class="rail-num">01</div><div><h5>Enviar documento</h5><p>PDF, PNG ou JPG</p></div></div>
         <div class="rail-line"></div>
-        <div class="rail-step" data-step="2">
-          <div class="rail-num">02</div>
-          <div><h5>Posicionar</h5><p>Toque onde vai a assinatura</p></div>
-        </div>
+        <div class="rail-step" data-step="2"><div class="rail-num">02</div><div><h5>Posicionar</h5><p>Toque onde vai a assinatura</p></div></div>
         <div class="rail-line"></div>
-        <div class="rail-step" data-step="3">
-          <div class="rail-num">03</div>
-          <div><h5>Assinar</h5><p>Desenhe ou digite</p></div>
-        </div>
+        <div class="rail-step" data-step="3"><div class="rail-num">03</div><div><h5>Quem assina</h5><p>Você ou por link</p></div></div>
         <div class="rail-line"></div>
-        <div class="rail-step" data-step="4">
-          <div class="rail-num">04</div>
-          <div><h5>Enviar por e-mail</h5><p>Selar e compartilhar</p></div>
-        </div>
+        <div class="rail-step" data-step="4"><div class="rail-num">04</div><div><h5>Concluir</h5><p>Baixar ou acompanhar</p></div></div>
       </div>
 
       <div class="panel-area">
@@ -398,19 +432,15 @@
         <!-- PANEL 1: UPLOAD -->
         <div class="panel active" data-panel="1">
           <h3>Envie o documento</h3>
-          <p class="hint">Aceita PDF, PNG ou JPG. Tudo é processado aqui no seu navegador — nada é enviado a um servidor.</p>
+          <p class="hint">Aceita PDF, PNG ou JPG.</p>
           <div class="dropzone" id="dropzone">
             <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg">
-            <div class="dz-icon">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
-            </div>
+            <div class="dz-icon"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></div>
             <h4>Arraste o arquivo aqui</h4>
             <p>ou clique para escolher — PDF, PNG ou JPG</p>
           </div>
           <div id="fileChipArea"></div>
-          <div class="row-actions">
-            <button class="btn-primary" id="toStep2" disabled>Continuar →</button>
-          </div>
+          <div class="row-actions"><button class="btn-primary" id="toStep2" disabled>Continuar →</button></div>
         </div>
 
         <!-- PANEL 2: POSITION -->
@@ -418,21 +448,14 @@
           <h3>Onde a assinatura deve aparecer?</h3>
           <p class="hint">Clique no documento para posicionar o campo de assinatura. Arraste para mover e use o ponto no canto para redimensionar.</p>
           <div class="stage-wrap">
-            <div id="docStage">
+            <div class="doc-stage" id="docStage">
               <canvas id="pdfCanvas"></canvas>
               <div class="stage-instructions" id="stageInstructions">Clique em qualquer ponto do documento</div>
-              <div class="sig-box" id="sigBox">
-                <span class="sig-label">assinatura</span>
-                <div class="handle" id="sigHandle"></div>
-              </div>
+              <div class="sig-box" id="sigBox"><span class="sig-label">assinatura</span><div class="handle" id="sigHandle"></div></div>
             </div>
             <div class="stage-side">
-              <div class="page-nav" id="pageNav" style="display:none;">
-                <button id="prevPage">‹</button>
-                <span id="pageLabel">1 / 1</span>
-                <button id="nextPage">›</button>
-              </div>
-              <div class="note-box"><strong>Dica:</strong> o campo de assinatura acompanha proporcionalmente o documento, então funciona em qualquer tamanho de tela.</div>
+              <div class="page-nav" id="pageNav" style="display:none;"><button id="prevPage">‹</button><span id="pageLabel">1 / 1</span><button id="nextPage">›</button></div>
+              <div class="note-box"><strong>Dica:</strong> o campo acompanha proporcionalmente o documento, funciona em qualquer tela.</div>
             </div>
           </div>
           <div class="row-actions">
@@ -441,8 +464,27 @@
           </div>
         </div>
 
-        <!-- PANEL 3: SIGN -->
-        <div class="panel" data-panel="3">
+        <!-- PANEL 3 CHOICE -->
+        <div class="panel" data-panel="3choice">
+          <h3>Quem vai assinar?</h3>
+          <p class="hint">Escolha um caminho — os dois geram um documento assinado de verdade.</p>
+          <div class="choice-grid">
+            <button class="choice-card" id="chooseMe">
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></span>
+              <h4>Eu mesmo, agora</h4>
+              <p>Desenhe ou digite sua assinatura e baixe o documento pronto na hora.</p>
+            </button>
+            <button class="choice-card" id="chooseOther">
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></span>
+              <h4>Outra pessoa, por link</h4>
+              <p>Gere um link único: ela abre, já vê o documento posicionado, e só assina — nada mais.</p>
+            </button>
+          </div>
+          <div class="row-actions"><button class="btn-ghost" id="backTo2fromChoice">← Voltar</button></div>
+        </div>
+
+        <!-- PANEL 3 SIGN (self) -->
+        <div class="panel" data-panel="3sign">
           <h3>Crie sua assinatura</h3>
           <p class="hint">Desenhe com o mouse ou o dedo, ou digite seu nome em estilo manuscrito.</p>
           <div class="tabs">
@@ -450,22 +492,55 @@
             <button class="tab-btn" data-tab="type">Digitar</button>
           </div>
           <div id="tabDraw">
-            <div class="sig-pad-wrap"><canvas id="padCanvas"></canvas></div>
+            <div class="sig-pad-wrap"><canvas id="padCanvas" class="sig-pad-canvas"></canvas></div>
             <div class="row-actions"><button class="btn-ghost" id="clearPad">Limpar</button></div>
           </div>
           <div id="tabType" style="display:none;">
-            <div class="type-wrap">
-              <input type="text" id="typeInput" placeholder="Seu nome" maxlength="40">
-              <p>Pré-visualização da assinatura manuscrita</p>
-            </div>
+            <div class="type-wrap"><input type="text" id="typeInput" placeholder="Seu nome" maxlength="40"><p>Pré-visualização da assinatura manuscrita</p></div>
           </div>
           <div class="row-actions">
-            <button class="btn-ghost" id="backTo2">← Voltar</button>
+            <button class="btn-ghost" id="backTo3choiceFromSign">← Voltar</button>
             <button class="btn-primary" id="toStep4" disabled>Usar esta assinatura →</button>
           </div>
         </div>
 
-        <!-- PANEL 4: SEND -->
+        <!-- PANEL 3 LINK (remote) -->
+        <div class="panel" data-panel="3link">
+          <h3>Link de assinatura</h3>
+          <p class="hint">Gere um link único deste documento. Quem receber abre, já vê o documento posicionado, e só assina.</p>
+          <div id="linkGenArea">
+            <div class="form-grid" style="margin-bottom:20px;">
+              <div class="field"><label>Nome de quem vai assinar (opcional)</label><input type="text" id="linkToName" placeholder="Nome do destinatário"></div>
+              <div class="field"><label>E-mail de quem vai assinar</label><input type="email" id="linkToEmail" placeholder="destinatario@email.com"></div>
+            </div>
+            <button class="btn-primary" id="generateLinkBtn">Gerar link de assinatura</button>
+            <div class="note-box warn" id="linkGenWarning" style="display:none; margin-top:16px;"></div>
+          </div>
+          <div id="linkResultArea" style="display:none; margin-top:8px;">
+            <div class="link-box"><span id="linkDisplay" style="flex:1;">—</span></div>
+            <div class="row-actions">
+              <button class="btn-primary" id="copyLinkBtn">Copiar link</button>
+              <button class="btn-ghost" id="openMailWithLink">Enviar por e-mail</button>
+              <button class="btn-ghost" id="checkStatusBtn">Verificar status</button>
+            </div>
+            <div class="protocol">
+              <div><h6>Status</h6><p><span class="status-pill"><span class="status-dot" id="statusDot"></span><span id="linkStatus">Aguardando assinatura…</span></span></p></div>
+              <div><h6>Criado em</h6><p id="linkCreatedAt">—</p></div>
+            </div>
+            <div class="row-actions" id="linkDownloadArea" style="display:none;">
+              <button class="btn-primary" id="downloadSignedBtn">Baixar documento assinado</button>
+            </div>
+          </div>
+          <div class="row-actions"><button class="btn-ghost" id="backTo3choiceFromLink">← Voltar</button></div>
+
+          <div style="margin-top:52px;">
+            <h3 style="font-size:1.15rem;">Documentos enviados nesta sessão</h3>
+            <p class="hint" style="margin-bottom:16px;">Guardados neste navegador — clique em verificar para atualizar o status.</p>
+            <div id="sentDocsList"><p class="hint">Nenhum documento enviado ainda.</p></div>
+          </div>
+        </div>
+
+        <!-- PANEL 4: SEND (self-sign download) -->
         <div class="panel" data-panel="4">
           <div class="main-send">
             <h3>Envie por e-mail</h3>
@@ -475,13 +550,13 @@
               <div class="field"><label>Seu e-mail (opcional)</label><input type="email" id="fromEmail" placeholder="voce@email.com"></div>
               <div class="field"><label>Nome do destinatário</label><input type="text" id="toName" placeholder="Nome de quem vai receber"></div>
               <div class="field"><label>E-mail do destinatário</label><input type="email" id="toEmail" placeholder="destinatario@email.com"></div>
-              <div class="field full"><label>Mensagem</label><textarea id="msg" rows="3" placeholder="Segue o documento assinado.">Segue em anexo o documento assinado. Qualquer dúvida, estou à disposição.</textarea></div>
+              <div class="field full"><label>Mensagem</label><textarea id="msg" rows="3">Segue em anexo o documento assinado. Qualquer dúvida, estou à disposição.</textarea></div>
             </div>
             <div class="seal-cta">
               <button class="seal-press" id="sealBtn">Selar &<br>enviar</button>
               <div class="note-box" style="margin:0;">Ao pressionar o selo, o PDF assinado é baixado automaticamente e seu programa de e-mail abre com os campos preenchidos.</div>
             </div>
-            <div class="row-actions"><button class="btn-ghost" id="backTo3">← Voltar</button></div>
+            <div class="row-actions"><button class="btn-ghost" id="backTo3choiceFromSend">← Voltar</button></div>
           </div>
 
           <div class="success-panel" id="successPanel">
@@ -505,308 +580,101 @@
   </div>
 </section>
 
-<footer>
-  <div class="wrap">Selo — assinatura de documentos processada inteiramente no seu navegador.</div>
-</footer>
+<footer><div class="wrap">Selo — assinatura de documentos, com envio local ou por link.</div></footer>
+</div><!-- /mainApp -->
+
+<!-- ================= SIGNER VIEW ================= -->
+<div id="signerView">
+  <header class="top"><div class="topbar"><div class="brand"><span class="seal-mini"></span> Selo</div></div></header>
+  <div class="signer-shell">
+    <div class="signer-card">
+      <div id="signerLoading"><h2>Carregando documento…</h2><p>Só um instante.</p></div>
+
+      <div id="signerErrorBox" style="display:none;">
+        <h2>Não foi possível abrir</h2>
+        <div class="note-box warn" id="signerErrorMsg"></div>
+      </div>
+
+      <div id="signerAlreadyDone" style="display:none;">
+        <div class="signer-done-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h2>Este documento já foi assinado</h2>
+        <p id="signerAlreadyDoneDate"></p>
+      </div>
+
+      <div id="signerContent" style="display:none;">
+        <h2 id="signerTitle">Assine o documento</h2>
+        <p id="signerSubtitle">Revise abaixo e assine no campo destacado.</p>
+        <div class="stage-wrap">
+          <div class="doc-stage" id="signerStage">
+            <canvas id="signerCanvas"></canvas>
+            <div class="sig-box placed readonly" id="signerSigBox"><span class="sig-label" id="signerSigBoxLabel">assine aqui</span></div>
+          </div>
+          <div class="stage-side">
+            <div class="field"><label>Seu nome (opcional)</label><input type="text" id="signerName" placeholder="Seu nome"></div>
+            <div class="tabs">
+              <button class="tab-btn active" data-stab="draw">Desenhar</button>
+              <button class="tab-btn" data-stab="type">Digitar</button>
+            </div>
+            <div id="signerTabDraw">
+              <div class="sig-pad-wrap"><canvas id="signerPadCanvas" class="sig-pad-canvas"></canvas></div>
+              <div class="row-actions" style="margin-top:10px;"><button class="btn-ghost" id="signerClearPad">Limpar</button></div>
+            </div>
+            <div id="signerTabType" style="display:none;">
+              <div class="type-wrap"><input type="text" id="signerTypeInput" placeholder="Seu nome" maxlength="40"></div>
+            </div>
+            <button class="seal-press" id="signerSealBtn" style="margin-top:8px;" disabled>Assinar &<br>enviar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="signerDone" style="display:none;">
+        <div class="signer-done-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h2>Documento assinado e enviado ✓</h2>
+        <p>A pessoa que te enviou o link já pode ver o documento assinado. Você já pode fechar esta janela.</p>
+        <div class="row-actions"><button class="btn-ghost" id="signerDownloadCopy">Baixar uma cópia para você (opcional)</button></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
 (function(){
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-  // ---------- state ----------
-  const state = {
-    fileType: null, // 'pdf' | 'image'
-    fileName: '',
-    pdfBytesForLib: null,
-    pdfDoc: null,
-    numPages: 1,
-    currentPage: 1,
-    imageEl: null,
-    placement: null, // {xRatio,yRatio,wRatio,hRatio,page}
-    signatureDataUrl: null
-  };
-
-  // ---------- step navigation ----------
-  function goToStep(n){
-    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.panel==String(n)));
-    document.querySelectorAll('.rail-step').forEach(r=>{
-      const s = Number(r.dataset.step);
-      r.classList.toggle('active', s===n);
-      r.classList.toggle('done', s<n);
-    });
-    if(n===4){
-      document.querySelector('.main-send').style.display='block';
-      document.getElementById('successPanel').classList.remove('active');
-    }
+  const LIBS_OK = (typeof pdfjsLib !== 'undefined') && (typeof PDFLib !== 'undefined');
+  if(typeof pdfjsLib !== 'undefined'){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  } else {
+    console.warn('pdf.js não carregou — envio de PDF ficará indisponível, mas PNG/JPG continua funcionando.');
   }
+  const STORAGE_OK = (typeof window.storage !== 'undefined') && window.storage;
 
-  // ---------- PANEL 1: upload ----------
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('fileInput');
-  const fileChipArea = document.getElementById('fileChipArea');
-  const toStep2 = document.getElementById('toStep2');
-
-  dropzone.addEventListener('click', ()=>fileInput.click());
-  ['dragover','dragenter'].forEach(ev=>dropzone.addEventListener(ev, e=>{e.preventDefault(); dropzone.classList.add('drag');}));
-  ['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev, e=>{e.preventDefault(); dropzone.classList.remove('drag');}));
-  dropzone.addEventListener('drop', e=>{ if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
-  fileInput.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
-
-  async function handleFile(file){
-    state.fileName = file.name;
-    fileChipArea.innerHTML = `<div class="file-chip">📄 ${file.name} <button id="clearFile">✕</button></div>`;
-    document.getElementById('clearFile').addEventListener('click', ()=>{
-      fileChipArea.innerHTML=''; toStep2.disabled = true; state.fileType=null;
-    });
-
-    if(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')){
-      state.fileType = 'pdf';
-      const buf1 = await file.arrayBuffer();
-      state.pdfBytesForLib = buf1.slice(0);
-      const buf2 = buf1.slice(0);
-      state.pdfDoc = await pdfjsLib.getDocument({data: buf2}).promise;
-      state.numPages = state.pdfDoc.numPages;
-      state.currentPage = 1;
-    } else {
-      state.fileType = 'image';
-      const dataUrl = await new Promise((res)=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-      const img = new Image();
-      await new Promise(res=>{ img.onload=res; img.src=dataUrl; });
-      state.imageEl = img;
-      state.numPages = 1;
-      state.currentPage = 1;
-    }
-    toStep2.disabled = false;
+  // ================= shared helpers =================
+  function arrayBufferToBase64(buffer){
+    return bytesToBase64(new Uint8Array(buffer));
   }
-
-  toStep2.addEventListener('click', async ()=>{
-    goToStep(2);
-    await renderStage();
-  });
-  document.getElementById('backTo1').addEventListener('click', ()=>goToStep(1));
-
-  // ---------- PANEL 2: position ----------
-  const stageCanvas = document.getElementById('pdfCanvas');
-  const stageCtx = stageCanvas.getContext('2d');
-  const docStage = document.getElementById('docStage');
-  const stageInstructions = document.getElementById('stageInstructions');
-  const sigBox = document.getElementById('sigBox');
-  const sigHandle = document.getElementById('sigHandle');
-  const pageNav = document.getElementById('pageNav');
-  const pageLabel = document.getElementById('pageLabel');
-  const toStep3 = document.getElementById('toStep3');
-
-  async function renderStage(){
-    const containerWidth = Math.min(docStage.parentElement.clientWidth * 0.62, 640);
-    if(state.fileType === 'pdf'){
-      const page = await state.pdfDoc.getPage(state.currentPage);
-      const naturalViewport = page.getViewport({scale:1});
-      const scale = containerWidth / naturalViewport.width;
-      const viewport = page.getViewport({scale});
-      stageCanvas.width = viewport.width;
-      stageCanvas.height = viewport.height;
-      await page.render({canvasContext: stageCtx, viewport}).promise;
-      pageNav.style.display = state.numPages>1 ? 'flex' : 'none';
-      pageLabel.textContent = `${state.currentPage} / ${state.numPages}`;
-      document.getElementById('prevPage').disabled = state.currentPage<=1;
-      document.getElementById('nextPage').disabled = state.currentPage>=state.numPages;
-    } else {
-      const img = state.imageEl;
-      const scale = containerWidth / img.naturalWidth;
-      stageCanvas.width = img.naturalWidth * scale;
-      stageCanvas.height = img.naturalHeight * scale;
-      stageCtx.drawImage(img, 0, 0, stageCanvas.width, stageCanvas.height);
-      pageNav.style.display = 'none';
-    }
-    docStage.style.width = stageCanvas.width + 'px';
-    resetSigBoxVisual();
+  function bytesToBase64(bytes){
+    let binary = '';
+    const chunk = 0x8000;
+    for(let i=0;i<bytes.length;i+=chunk){ binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); }
+    return btoa(binary);
   }
-
-  document.getElementById('prevPage').addEventListener('click', async ()=>{ if(state.currentPage>1){ state.currentPage--; state.placement=null; toStep3.disabled=true; await renderStage(); }});
-  document.getElementById('nextPage').addEventListener('click', async ()=>{ if(state.currentPage<state.numPages){ state.currentPage++; state.placement=null; toStep3.disabled=true; await renderStage(); }});
-
-  function resetSigBoxVisual(){
-    sigBox.classList.remove('placed');
-    stageInstructions.style.opacity = '1';
-    stageInstructions.style.display = 'flex';
+  function base64ToArrayBuffer(base64){
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
   }
-
-  let dragging = false, dragOffset={x:0,y:0};
-  let resizing = false;
-
-  docStage.addEventListener('pointerdown', (e)=>{
-    if(e.target === sigHandle){ resizing = true; e.stopPropagation(); return; }
-    if(e.target === sigBox || sigBox.contains(e.target)){
-      dragging = true;
-      const rect = sigBox.getBoundingClientRect();
-      dragOffset.x = e.clientX - rect.left;
-      dragOffset.y = e.clientY - rect.top;
-      return;
-    }
-    // place new box
-    const stageRect = docStage.getBoundingClientRect();
-    let x = e.clientX - stageRect.left;
-    let y = e.clientY - stageRect.top;
-    const w = Math.min(180, stageCanvas.width*0.32);
-    const h = w*0.4;
-    x = Math.max(0, Math.min(x - w/2, stageCanvas.width - w));
-    y = Math.max(0, Math.min(y - h/2, stageCanvas.height - h));
-    sigBox.style.left = x+'px'; sigBox.style.top = y+'px';
-    sigBox.style.width = w+'px'; sigBox.style.height = h+'px';
-    sigBox.classList.add('placed');
-    stageInstructions.style.display = 'none';
-    toStep3.disabled = false;
-    savePlacement();
-  });
-
-  window.addEventListener('pointermove', (e)=>{
-    if(dragging){
-      const stageRect = docStage.getBoundingClientRect();
-      let x = e.clientX - stageRect.left - dragOffset.x;
-      let y = e.clientY - stageRect.top - dragOffset.y;
-      const w = sigBox.offsetWidth, h = sigBox.offsetHeight;
-      x = Math.max(0, Math.min(x, stageCanvas.width - w));
-      y = Math.max(0, Math.min(y, stageCanvas.height - h));
-      sigBox.style.left = x+'px'; sigBox.style.top = y+'px';
-      savePlacement();
-    } else if(resizing){
-      const stageRect = docStage.getBoundingClientRect();
-      let w = e.clientX - stageRect.left - sigBox.offsetLeft;
-      let h = e.clientY - stageRect.top - sigBox.offsetTop;
-      w = Math.max(60, Math.min(w, stageCanvas.width - sigBox.offsetLeft));
-      h = Math.max(28, Math.min(h, stageCanvas.height - sigBox.offsetTop));
-      sigBox.style.width = w+'px'; sigBox.style.height = h+'px';
-      savePlacement();
-    }
-  });
-  window.addEventListener('pointerup', ()=>{ dragging=false; resizing=false; });
-
-  function savePlacement(){
-    state.placement = {
-      xRatio: sigBox.offsetLeft / stageCanvas.width,
-      yRatio: sigBox.offsetTop / stageCanvas.height,
-      wRatio: sigBox.offsetWidth / stageCanvas.width,
-      hRatio: sigBox.offsetHeight / stageCanvas.height,
-      page: state.currentPage
-    };
+  function randomId(){
+    const chars='abcdefghjkmnpqrstuvwxyz23456789';
+    let s=''; for(let i=0;i<12;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+    return s;
   }
-
-  toStep3.addEventListener('click', ()=>{ goToStep(3); setTimeout(setupPad, 50); });
-  document.getElementById('backTo2').addEventListener('click', ()=>goToStep(2));
-
-  // ---------- PANEL 3: signature ----------
-  const padCanvas = document.getElementById('padCanvas');
-  const padCtx = padCanvas.getContext('2d');
-  const toStep4 = document.getElementById('toStep4');
-  let padHasContent = false;
-  let padReady = false;
-
-  function setupPad(){
-    if(padReady) return;
-    padReady = true;
-    const ratio = window.devicePixelRatio || 1;
-    padCanvas.width = padCanvas.clientWidth * ratio;
-    padCanvas.height = padCanvas.clientHeight * ratio;
-    padCtx.scale(ratio, ratio);
-    padCtx.lineWidth = 2.4;
-    padCtx.lineCap = 'round';
-    padCtx.strokeStyle = '#101b33';
-    let drawing = false, last = null;
-    function pos(e){ const r = padCanvas.getBoundingClientRect(); return {x:(e.clientX-r.left), y:(e.clientY-r.top)}; }
-    padCanvas.addEventListener('pointerdown', e=>{ drawing=true; last=pos(e); padHasContent=true; toStep4.disabled=false; });
-    padCanvas.addEventListener('pointermove', e=>{
-      if(!drawing) return;
-      const p = pos(e);
-      padCtx.beginPath(); padCtx.moveTo(last.x,last.y); padCtx.lineTo(p.x,p.y); padCtx.stroke();
-      last = p;
-    });
-    window.addEventListener('pointerup', ()=>drawing=false);
-  }
-  document.getElementById('clearPad').addEventListener('click', ()=>{
-    padCtx.clearRect(0,0,padCanvas.width,padCanvas.height);
-    padHasContent = false;
-    if(document.querySelector('.tab-btn[data-tab="draw"]').classList.contains('active')) toStep4.disabled = true;
-  });
-
-  document.querySelectorAll('.tab-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const isDraw = btn.dataset.tab === 'draw';
-      document.getElementById('tabDraw').style.display = isDraw ? 'block' : 'none';
-      document.getElementById('tabType').style.display = isDraw ? 'none' : 'block';
-      toStep4.disabled = isDraw ? !padHasContent : (typeInput.value.trim().length===0);
-    });
-  });
-  const typeInput = document.getElementById('typeInput');
-  typeInput.addEventListener('input', ()=>{ toStep4.disabled = typeInput.value.trim().length===0; });
-
-  toStep4.addEventListener('click', ()=>{
-    const isDraw = document.querySelector('.tab-btn[data-tab="draw"]').classList.contains('active');
-    if(isDraw){
-      state.signatureDataUrl = padCanvas.toDataURL('image/png');
-    } else {
-      // render typed name onto an offscreen canvas using script font
-      const off = document.createElement('canvas');
-      off.width = 600; off.height = 220;
-      const octx = off.getContext('2d');
-      octx.clearRect(0,0,off.width,off.height);
-      octx.fillStyle = '#101b33';
-      octx.font = "600 96px 'Caveat', cursive";
-      octx.textBaseline = 'middle';
-      octx.textAlign = 'center';
-      octx.fillText(typeInput.value.trim(), off.width/2, off.height/2);
-      state.signatureDataUrl = off.toDataURL('image/png');
-    }
-    // paint preview into sigBox
-    sigBox.innerHTML = `<img src="${state.signatureDataUrl}" alt="assinatura"><div class="handle" id="sigHandle2"></div>`;
-    goToStep(4);
-  });
-  document.getElementById('backTo3').addEventListener('click', ()=>goToStep(3));
-
-  // ---------- PANEL 4: finalize + send ----------
   function randomProtocol(){
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let s='';
-    for(let i=0;i<10;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    let s=''; for(let i=0;i<10;i++) s += chars[Math.floor(Math.random()*chars.length)];
     return s.slice(0,4)+'-'+s.slice(4,8)+'-'+s.slice(8);
   }
-
-  let finalBlobUrl = null;
-  let finalFileName = 'documento-assinado.pdf';
-
-  async function buildSignedFile(){
-    if(state.fileType === 'pdf'){
-      const pdfDocLib = await PDFLib.PDFDocument.load(state.pdfBytesForLib);
-      const pages = pdfDocLib.getPages();
-      const page = pages[state.placement.page - 1];
-      const { width: pw, height: ph } = page.getSize();
-      const pngImage = await pdfDocLib.embedPng(state.signatureDataUrl);
-      const sigW = state.placement.wRatio * pw;
-      const sigH = state.placement.hRatio * ph;
-      const x = state.placement.xRatio * pw;
-      const y = ph - (state.placement.yRatio * ph) - sigH;
-      page.drawImage(pngImage, { x, y, width: sigW, height: sigH });
-      const bytes = await pdfDocLib.save();
-      const blob = new Blob([bytes], {type:'application/pdf'});
-      finalFileName = (state.fileName.replace(/\.pdf$/i,'') || 'documento') + '-assinado.pdf';
-      return blob;
-    } else {
-      const off = document.createElement('canvas');
-      off.width = stageCanvas.width; off.height = stageCanvas.height;
-      const octx = off.getContext('2d');
-      octx.drawImage(state.imageEl, 0, 0, off.width, off.height);
-      const img = new Image();
-      await new Promise(res=>{ img.onload=res; img.src=state.signatureDataUrl; });
-      octx.drawImage(img, state.placement.xRatio*off.width, state.placement.yRatio*off.height, state.placement.wRatio*off.width, state.placement.hRatio*off.height);
-      const blob = await new Promise(res=>off.toBlob(res, 'image/png'));
-      finalFileName = (state.fileName.replace(/\.(png|jpg|jpeg)$/i,'') || 'documento') + '-assinado.png';
-      return blob;
-    }
-  }
-
   function downloadBlob(blob, name){
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -814,42 +682,601 @@
     document.body.appendChild(a); a.click(); a.remove();
     return url;
   }
+  async function saveDoc(id, payload){ await window.storage.set('doc:'+id, JSON.stringify(payload), true); }
+  async function loadDoc(id){ try{ const r = await window.storage.get('doc:'+id, true); return r? JSON.parse(r.value): null; }catch(e){ return null; } }
+  async function getSentDocs(){ try{ const r = await window.storage.get('sentDocs', false); return r? JSON.parse(r.value): []; }catch(e){ return []; } }
+  async function addSentDoc(meta){
+    const list = await getSentDocs();
+    list.unshift(meta);
+    await window.storage.set('sentDocs', JSON.stringify(list), false);
+  }
 
-  document.getElementById('sealBtn').addEventListener('click', async ()=>{
-    const btn = document.getElementById('sealBtn');
-    btn.classList.add('stamping');
-    btn.disabled = true;
-    const blob = await buildSignedFile();
-    finalBlobUrl = downloadBlob(blob, finalFileName);
+  // ================= routing: signer vs sender =================
+  const params = new URLSearchParams(window.location.search);
+  const signId = params.get('assinar');
 
-    const proto = randomProtocol();
-    document.getElementById('protoCode').textContent = proto;
-    document.getElementById('protoDate').textContent = new Date().toLocaleString('pt-BR');
-    document.getElementById('protoFile').textContent = finalFileName;
+  if(signId){
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('signerView').style.display = 'block';
+    initSignerView(signId);
+  } else {
+    document.getElementById('signerView').style.display = 'none';
+    if(!STORAGE_OK){
+      document.getElementById('publishBanner').textContent = 'O armazenamento compartilhado não está disponível neste modo de visualização — links de assinatura remota só funcionam quando este artifact está publicado pela Claude.';
+    }
+    initSenderApp();
+  }
 
-    const toEmail = document.getElementById('toEmail').value.trim();
-    const toName = document.getElementById('toName').value.trim() || 'destinatário(a)';
-    const fromName = document.getElementById('fromName').value.trim() || 'Remetente';
-    const msg = document.getElementById('msg').value.trim();
-    const subject = `Documento assinado — ${finalFileName}`;
-    const body = `Olá ${toName},\n\n${msg}\n\n(Lembre-se de anexar o arquivo ${finalFileName}, baixado agora, antes de enviar.)\n\nAtenciosamente,\n${fromName}\n\nCódigo de verificação: ${proto}`;
-    const mailto = `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+  // ================================================================
+  // ===================== SENDER APP ==============================
+  // ================================================================
+  function initSenderApp(){
+    const state = {
+      fileType: null, fileName: '', pdfBytesForLib: null, pdfDoc: null,
+      numPages: 1, currentPage: 1, imageEl: null, imageDataUrl: null,
+      placement: null, signatureDataUrl: null
+    };
 
-    document.querySelector('.main-send').style.display='none';
-    document.getElementById('successPanel').classList.add('active');
-    btn.classList.remove('stamping');
-    btn.disabled = false;
-    window.__lastMailto = mailto;
-    window.__lastBlob = blob;
-  });
+    function goToStep(panelKey, railStep){
+      document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.panel===panelKey));
+      document.querySelectorAll('.rail-step').forEach(r=>{
+        const s = Number(r.dataset.step);
+        r.classList.toggle('active', s===railStep);
+        r.classList.toggle('done', s<railStep);
+      });
+      if(panelKey==='4'){
+        document.querySelector('.main-send').style.display='block';
+        document.getElementById('successPanel').classList.remove('active');
+      }
+    }
 
-  document.getElementById('reopenMail').addEventListener('click', ()=>{ if(window.__lastMailto) window.location.href = window.__lastMailto; });
-  document.getElementById('redownload').addEventListener('click', ()=>{ if(window.__lastBlob) downloadBlob(window.__lastBlob, finalFileName); });
+    // ---- PANEL 1 ----
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileChipArea = document.getElementById('fileChipArea');
+    const toStep2 = document.getElementById('toStep2');
 
-  window.addEventListener('resize', ()=>{ if(state.fileType) renderStage(); });
+    dropzone.addEventListener('click', ()=>fileInput.click());
+    ['dragover','dragenter'].forEach(ev=>dropzone.addEventListener(ev, e=>{e.preventDefault(); dropzone.classList.add('drag');}));
+    ['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev, e=>{e.preventDefault(); dropzone.classList.remove('drag');}));
+    dropzone.addEventListener('drop', e=>{ if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+    fileInput.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+    async function handleFile(file){
+      state.fileName = file.name;
+      fileChipArea.innerHTML = `<div class="file-chip">📄 ${file.name} <button id="clearFile">✕</button></div>`;
+      document.getElementById('clearFile').addEventListener('click', ()=>{ fileChipArea.innerHTML=''; toStep2.disabled=true; state.fileType=null; });
+
+      if(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')){
+        if(!LIBS_OK){
+          fileChipArea.innerHTML += `<div class="note-box warn" style="margin-top:14px;">Não foi possível carregar o motor de PDF (biblioteca externa indisponível). Recarregue a página ou envie como PNG/JPG.</div>`;
+          toStep2.disabled = true; return;
+        }
+        state.fileType = 'pdf';
+        const buf1 = await file.arrayBuffer();
+        state.pdfBytesForLib = buf1.slice(0);
+        const buf2 = buf1.slice(0);
+        state.pdfDoc = await pdfjsLib.getDocument({data: buf2}).promise;
+        state.numPages = state.pdfDoc.numPages;
+        state.currentPage = 1;
+      } else {
+        state.fileType = 'image';
+        const dataUrl = await new Promise((res)=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+        state.imageDataUrl = dataUrl;
+        const img = new Image();
+        await new Promise(res=>{ img.onload=res; img.src=dataUrl; });
+        state.imageEl = img;
+        state.numPages = 1; state.currentPage = 1;
+      }
+      toStep2.disabled = false;
+    }
+
+    toStep2.addEventListener('click', async ()=>{ goToStep('2', 2); await renderStage(); });
+    document.getElementById('backTo1').addEventListener('click', ()=>goToStep('1', 1));
+
+    // ---- PANEL 2 ----
+    const stageCanvas = document.getElementById('pdfCanvas');
+    const stageCtx = stageCanvas.getContext('2d');
+    const docStage = document.getElementById('docStage');
+    const stageInstructions = document.getElementById('stageInstructions');
+    const sigBox = document.getElementById('sigBox');
+    const sigHandle = document.getElementById('sigHandle');
+    const pageNav = document.getElementById('pageNav');
+    const pageLabel = document.getElementById('pageLabel');
+    const toStep3 = document.getElementById('toStep3');
+
+    async function renderStage(){
+      const containerWidth = Math.min(docStage.parentElement.clientWidth * 0.62, 640);
+      if(state.fileType === 'pdf'){
+        const page = await state.pdfDoc.getPage(state.currentPage);
+        const naturalViewport = page.getViewport({scale:1});
+        const scale = containerWidth / naturalViewport.width;
+        const viewport = page.getViewport({scale});
+        stageCanvas.width = viewport.width; stageCanvas.height = viewport.height;
+        await page.render({canvasContext: stageCtx, viewport}).promise;
+        pageNav.style.display = state.numPages>1 ? 'flex' : 'none';
+        pageLabel.textContent = `${state.currentPage} / ${state.numPages}`;
+        document.getElementById('prevPage').disabled = state.currentPage<=1;
+        document.getElementById('nextPage').disabled = state.currentPage>=state.numPages;
+      } else {
+        const img = state.imageEl;
+        const scale = containerWidth / img.naturalWidth;
+        stageCanvas.width = img.naturalWidth * scale; stageCanvas.height = img.naturalHeight * scale;
+        stageCtx.drawImage(img, 0, 0, stageCanvas.width, stageCanvas.height);
+        pageNav.style.display = 'none';
+      }
+      docStage.style.width = stageCanvas.width + 'px';
+      sigBox.classList.remove('placed');
+      stageInstructions.style.display = 'flex';
+    }
+
+    document.getElementById('prevPage').addEventListener('click', async ()=>{ if(state.currentPage>1){ state.currentPage--; state.placement=null; toStep3.disabled=true; await renderStage(); }});
+    document.getElementById('nextPage').addEventListener('click', async ()=>{ if(state.currentPage<state.numPages){ state.currentPage++; state.placement=null; toStep3.disabled=true; await renderStage(); }});
+
+    let dragging=false, dragOffset={x:0,y:0}, resizing=false;
+    docStage.addEventListener('pointerdown', (e)=>{
+      if(e.target === sigHandle){ resizing=true; e.stopPropagation(); return; }
+      if(e.target === sigBox || sigBox.contains(e.target)){
+        dragging=true; const rect = sigBox.getBoundingClientRect();
+        dragOffset.x = e.clientX-rect.left; dragOffset.y = e.clientY-rect.top; return;
+      }
+      const stageRect = docStage.getBoundingClientRect();
+      let x = e.clientX - stageRect.left, y = e.clientY - stageRect.top;
+      const w = Math.min(180, stageCanvas.width*0.32), h = w*0.4;
+      x = Math.max(0, Math.min(x - w/2, stageCanvas.width - w));
+      y = Math.max(0, Math.min(y - h/2, stageCanvas.height - h));
+      sigBox.style.left=x+'px'; sigBox.style.top=y+'px'; sigBox.style.width=w+'px'; sigBox.style.height=h+'px';
+      sigBox.classList.add('placed'); stageInstructions.style.display='none';
+      toStep3.disabled = false; savePlacement();
+    });
+    window.addEventListener('pointermove', (e)=>{
+      if(dragging){
+        const stageRect = docStage.getBoundingClientRect();
+        let x = e.clientX-stageRect.left-dragOffset.x, y = e.clientY-stageRect.top-dragOffset.y;
+        const w = sigBox.offsetWidth, h = sigBox.offsetHeight;
+        x = Math.max(0, Math.min(x, stageCanvas.width-w)); y = Math.max(0, Math.min(y, stageCanvas.height-h));
+        sigBox.style.left=x+'px'; sigBox.style.top=y+'px'; savePlacement();
+      } else if(resizing){
+        const stageRect = docStage.getBoundingClientRect();
+        let w = e.clientX-stageRect.left-sigBox.offsetLeft, h = e.clientY-stageRect.top-sigBox.offsetTop;
+        w = Math.max(60, Math.min(w, stageCanvas.width-sigBox.offsetLeft));
+        h = Math.max(28, Math.min(h, stageCanvas.height-sigBox.offsetTop));
+        sigBox.style.width=w+'px'; sigBox.style.height=h+'px'; savePlacement();
+      }
+    });
+    window.addEventListener('pointerup', ()=>{ dragging=false; resizing=false; });
+
+    function savePlacement(){
+      state.placement = {
+        xRatio: sigBox.offsetLeft/stageCanvas.width, yRatio: sigBox.offsetTop/stageCanvas.height,
+        wRatio: sigBox.offsetWidth/stageCanvas.width, hRatio: sigBox.offsetHeight/stageCanvas.height,
+        page: state.currentPage
+      };
+    }
+
+    toStep3.addEventListener('click', ()=>{ goToStep('3choice', 3); });
+    document.getElementById('backTo2fromChoice').addEventListener('click', ()=>goToStep('2', 2));
+
+    // ---- PANEL 3 choice ----
+    document.getElementById('chooseMe').addEventListener('click', ()=>{ goToStep('3sign', 3); setTimeout(setupPad, 50); });
+    document.getElementById('chooseOther').addEventListener('click', ()=>{ goToStep('3link', 3); refreshSentDocsList(); });
+    document.getElementById('backTo3choiceFromSign').addEventListener('click', ()=>goToStep('3choice', 3));
+    document.getElementById('backTo3choiceFromLink').addEventListener('click', ()=>{ stopPolling(); goToStep('3choice', 3); });
+    document.getElementById('backTo3choiceFromSend').addEventListener('click', ()=>goToStep('3choice', 3));
+
+    // ---- PANEL 3sign: signature pad ----
+    const padCanvas = document.getElementById('padCanvas');
+    const padCtx = padCanvas.getContext('2d');
+    const toStep4 = document.getElementById('toStep4');
+    let padHasContent = false, padReady = false;
+
+    function setupPad(){
+      if(padReady) return; padReady = true;
+      const ratio = window.devicePixelRatio || 1;
+      padCanvas.width = padCanvas.clientWidth*ratio; padCanvas.height = padCanvas.clientHeight*ratio;
+      padCtx.scale(ratio, ratio); padCtx.lineWidth=2.4; padCtx.lineCap='round'; padCtx.strokeStyle='#101b33';
+      let drawing=false, last=null;
+      function pos(e){ const r = padCanvas.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+      padCanvas.addEventListener('pointerdown', e=>{ drawing=true; last=pos(e); padHasContent=true; toStep4.disabled=false; });
+      padCanvas.addEventListener('pointermove', e=>{ if(!drawing) return; const p=pos(e); padCtx.beginPath(); padCtx.moveTo(last.x,last.y); padCtx.lineTo(p.x,p.y); padCtx.stroke(); last=p; });
+      window.addEventListener('pointerup', ()=>drawing=false);
+    }
+    document.getElementById('clearPad').addEventListener('click', ()=>{
+      padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padHasContent=false;
+      if(document.querySelector('#tabDraw').style.display!=='none') toStep4.disabled=true;
+    });
+    document.querySelectorAll('#tabDraw, #tabType').forEach(()=>{});
+    document.querySelectorAll('.panel[data-panel="3sign"] .tab-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.panel[data-panel="3sign"] .tab-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const isDraw = btn.dataset.tab === 'draw';
+        document.getElementById('tabDraw').style.display = isDraw?'block':'none';
+        document.getElementById('tabType').style.display = isDraw?'none':'block';
+        toStep4.disabled = isDraw ? !padHasContent : (typeInput.value.trim().length===0);
+      });
+    });
+    const typeInput = document.getElementById('typeInput');
+    typeInput.addEventListener('input', ()=>{ toStep4.disabled = typeInput.value.trim().length===0; });
+
+    toStep4.addEventListener('click', ()=>{
+      const isDraw = document.querySelector('.panel[data-panel="3sign"] .tab-btn[data-tab="draw"]').classList.contains('active');
+      state.signatureDataUrl = isDraw ? padCanvas.toDataURL('image/png') : renderTypedSignature(typeInput.value.trim());
+      sigBox.innerHTML = `<img src="${state.signatureDataUrl}" alt="assinatura"><div class="handle" id="sigHandle"></div>`;
+      goToStep('4', 4);
+    });
+
+    function renderTypedSignature(text){
+      const off = document.createElement('canvas'); off.width=600; off.height=220;
+      const octx = off.getContext('2d');
+      octx.fillStyle = '#101b33'; octx.font = "600 96px 'Caveat', cursive";
+      octx.textBaseline='middle'; octx.textAlign='center';
+      octx.fillText(text, off.width/2, off.height/2);
+      return off.toDataURL('image/png');
+    }
+
+    // ---- PANEL 3link: generate remote link ----
+    const generateLinkBtn = document.getElementById('generateLinkBtn');
+    const linkGenWarning = document.getElementById('linkGenWarning');
+    const linkResultArea = document.getElementById('linkResultArea');
+    const linkGenArea = document.getElementById('linkGenArea');
+    let currentLinkId = null, pollTimer = null;
+
+    generateLinkBtn.addEventListener('click', async ()=>{
+      if(!STORAGE_OK){
+        linkGenWarning.style.display='block';
+        linkGenWarning.textContent = 'O armazenamento compartilhado não está disponível agora. Isso funciona quando este site é aberto como um artifact publicado pela Claude. Publique-o (botão no topo do artifact) e tente de novo.';
+        return;
+      }
+      if(!state.placement){
+        linkGenWarning.style.display='block';
+        linkGenWarning.textContent = 'Volte e posicione o campo de assinatura primeiro.';
+        return;
+      }
+      generateLinkBtn.disabled = true; generateLinkBtn.textContent = 'Gerando…';
+      try{
+        let fileBase64, approxBytes;
+        if(state.fileType === 'pdf'){
+          fileBase64 = arrayBufferToBase64(state.pdfBytesForLib);
+          approxBytes = fileBase64.length * 0.75;
+        } else {
+          fileBase64 = state.imageDataUrl;
+          approxBytes = fileBase64.length * 0.75;
+        }
+        if(approxBytes > 3.5*1024*1024){
+          linkGenWarning.style.display='block';
+          linkGenWarning.textContent = 'Este arquivo é grande demais para o link de assinatura remota (máx. ~3,5MB). Use "Eu mesmo, agora" e envie por e-mail manualmente, ou reduza o tamanho do arquivo.';
+          generateLinkBtn.disabled=false; generateLinkBtn.textContent='Gerar link de assinatura';
+          return;
+        }
+        const id = randomId();
+        const payload = {
+          fileType: state.fileType, fileName: state.fileName, fileBase64,
+          placement: state.placement, status: 'pending', createdAt: Date.now(),
+          signedAt: null, signedFileBase64: null, signerName: null,
+          toName: document.getElementById('linkToName').value.trim(),
+          toEmail: document.getElementById('linkToEmail').value.trim()
+        };
+        await saveDoc(id, payload);
+        await addSentDoc({id, fileName: state.fileName, createdAt: payload.createdAt, toName: payload.toName, toEmail: payload.toEmail});
+        currentLinkId = id;
+        const link = window.location.origin + window.location.pathname + '?assinar=' + id;
+        document.getElementById('linkDisplay').textContent = link;
+        document.getElementById('linkCreatedAt').textContent = new Date(payload.createdAt).toLocaleString('pt-BR');
+        document.getElementById('linkStatus').textContent = 'Aguardando assinatura…';
+        document.getElementById('statusDot').classList.remove('signed');
+        document.getElementById('linkDownloadArea').style.display = 'none';
+        linkResultArea.style.display = 'block';
+        linkGenArea.style.display = 'none';
+        startPolling(id);
+        refreshSentDocsList();
+      } catch(err){
+        linkGenWarning.style.display='block';
+        linkGenWarning.textContent = 'Não foi possível gerar o link agora. Tente novamente em instantes.';
+        console.error(err);
+      } finally {
+        generateLinkBtn.disabled=false; generateLinkBtn.textContent='Gerar link de assinatura';
+      }
+    });
+
+    document.getElementById('copyLinkBtn').addEventListener('click', ()=>{
+      const text = document.getElementById('linkDisplay').textContent;
+      navigator.clipboard.writeText(text).then(()=>{
+        const btn = document.getElementById('copyLinkBtn'); const orig = btn.textContent;
+        btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=orig, 1600);
+      }).catch(()=>{});
+    });
+    document.getElementById('openMailWithLink').addEventListener('click', ()=>{
+      const link = document.getElementById('linkDisplay').textContent;
+      const toEmail = document.getElementById('linkToEmail').value.trim();
+      const toName = document.getElementById('linkToName').value.trim() || 'destinatário(a)';
+      const subject = 'Documento para assinar: ' + state.fileName;
+      const body = `Olá ${toName},\n\nPor favor, assine o documento pelo link abaixo — é só abrir e assinar, nada mais precisa ser feito:\n\n${link}\n\nObrigado!`;
+      window.location.href = `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+    document.getElementById('checkStatusBtn').addEventListener('click', ()=>{ if(currentLinkId) refreshLinkStatus(currentLinkId); });
+
+    async function refreshLinkStatus(id){
+      const doc = await loadDoc(id);
+      if(!doc) return;
+      if(doc.status === 'signed'){
+        document.getElementById('linkStatus').textContent = 'Assinado em ' + new Date(doc.signedAt).toLocaleString('pt-BR') + (doc.signerName? ' por '+doc.signerName : '');
+        document.getElementById('statusDot').classList.add('signed');
+        document.getElementById('linkDownloadArea').style.display = 'flex';
+        document.getElementById('downloadSignedBtn').onclick = ()=>downloadSignedDoc(doc);
+        stopPolling();
+      }
+    }
+    function startPolling(id){
+      stopPolling();
+      pollTimer = setInterval(()=>refreshLinkStatus(id), 5000);
+    }
+    function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+
+    function downloadSignedDoc(doc){
+      let blob, name;
+      if(doc.fileType === 'pdf'){
+        blob = new Blob([base64ToArrayBuffer(doc.signedFileBase64)], {type:'application/pdf'});
+        name = (doc.fileName.replace(/\.pdf$/i,'')||'documento') + '-assinado.pdf';
+      } else {
+        const parts = doc.signedFileBase64.split(',');
+        blob = new Blob([base64ToArrayBuffer(parts[1])], {type:'image/png'});
+        name = (doc.fileName.replace(/\.(png|jpg|jpeg)$/i,'')||'documento') + '-assinado.png';
+      }
+      downloadBlob(blob, name);
+    }
+
+    async function refreshSentDocsList(){
+      const list = await getSentDocs();
+      const el = document.getElementById('sentDocsList');
+      if(!STORAGE_OK){ el.innerHTML = '<p class="hint">Disponível quando o artifact estiver publicado.</p>'; return; }
+      if(list.length === 0){ el.innerHTML = '<p class="hint">Nenhum documento enviado ainda.</p>'; return; }
+      el.innerHTML = '';
+      for(const item of list){
+        const row = document.createElement('div');
+        row.className = 'sent-doc-row';
+        row.innerHTML = `
+          <div>
+            <div class="name">${item.fileName}</div>
+            <div class="meta">${new Date(item.createdAt).toLocaleString('pt-BR')} ${item.toName? '· '+item.toName : ''}</div>
+          </div>
+          <div class="actions">
+            <span class="status-pill" data-status-for="${item.id}"><span class="status-dot"></span><span>verificando…</span></span>
+            <button class="mini-btn" data-copy="${item.id}">Copiar link</button>
+            <button class="mini-btn" data-download="${item.id}" style="display:none;">Baixar</button>
+          </div>`;
+        el.appendChild(row);
+        loadDoc(item.id).then(doc=>{
+          const pill = row.querySelector(`[data-status-for="${item.id}"]`);
+          if(!doc){ pill.querySelector('span:last-child').textContent = 'não encontrado'; return; }
+          if(doc.status === 'signed'){
+            pill.querySelector('.status-dot').classList.add('signed');
+            pill.querySelector('span:last-child').textContent = 'assinado';
+            const dlBtn = row.querySelector(`[data-download="${item.id}"]`);
+            dlBtn.style.display = 'inline-block';
+            dlBtn.addEventListener('click', ()=>downloadSignedDoc(doc));
+          } else {
+            pill.querySelector('span:last-child').textContent = 'aguardando';
+          }
+        });
+        row.querySelector(`[data-copy="${item.id}"]`).addEventListener('click', (e)=>{
+          const link = window.location.origin + window.location.pathname + '?assinar=' + item.id;
+          navigator.clipboard.writeText(link).then(()=>{ e.target.textContent='Copiado ✓'; setTimeout(()=>e.target.textContent='Copiar link', 1500); }).catch(()=>{});
+        });
+      }
+    }
+
+    // ---- PANEL 4: self download + email ----
+    async function buildSignedFile(){
+      if(state.fileType === 'pdf'){
+        const pdfDocLib = await PDFLib.PDFDocument.load(state.pdfBytesForLib);
+        const pages = pdfDocLib.getPages();
+        const page = pages[state.placement.page - 1];
+        const { width: pw, height: ph } = page.getSize();
+        const pngImage = await pdfDocLib.embedPng(state.signatureDataUrl);
+        const sigW = state.placement.wRatio*pw, sigH = state.placement.hRatio*ph;
+        const x = state.placement.xRatio*pw, y = ph - (state.placement.yRatio*ph) - sigH;
+        page.drawImage(pngImage, {x, y, width: sigW, height: sigH});
+        const bytes = await pdfDocLib.save();
+        return { blob: new Blob([bytes], {type:'application/pdf'}), name: (state.fileName.replace(/\.pdf$/i,'')||'documento')+'-assinado.pdf' };
+      } else {
+        const off = document.createElement('canvas'); off.width = stageCanvas.width; off.height = stageCanvas.height;
+        const octx = off.getContext('2d');
+        octx.drawImage(state.imageEl, 0, 0, off.width, off.height);
+        const img = new Image(); await new Promise(res=>{ img.onload=res; img.src=state.signatureDataUrl; });
+        octx.drawImage(img, state.placement.xRatio*off.width, state.placement.yRatio*off.height, state.placement.wRatio*off.width, state.placement.hRatio*off.height);
+        const blob = await new Promise(res=>off.toBlob(res, 'image/png'));
+        return { blob, name: (state.fileName.replace(/\.(png|jpg|jpeg)$/i,'')||'documento')+'-assinado.png' };
+      }
+    }
+
+    document.getElementById('sealBtn').addEventListener('click', async ()=>{
+      const btn = document.getElementById('sealBtn');
+      btn.classList.add('stamping'); btn.disabled = true;
+      const { blob, name } = await buildSignedFile();
+      const finalBlobUrl = downloadBlob(blob, name);
+      const proto = randomProtocol();
+      document.getElementById('protoCode').textContent = proto;
+      document.getElementById('protoDate').textContent = new Date().toLocaleString('pt-BR');
+      document.getElementById('protoFile').textContent = name;
+      const toEmail = document.getElementById('toEmail').value.trim();
+      const toName = document.getElementById('toName').value.trim() || 'destinatário(a)';
+      const fromName = document.getElementById('fromName').value.trim() || 'Remetente';
+      const msg = document.getElementById('msg').value.trim();
+      const subject = `Documento assinado — ${name}`;
+      const body = `Olá ${toName},\n\n${msg}\n\n(Lembre-se de anexar o arquivo ${name}, baixado agora, antes de enviar.)\n\nAtenciosamente,\n${fromName}\n\nCódigo de verificação: ${proto}`;
+      const mailto = `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+      document.querySelector('.main-send').style.display='none';
+      document.getElementById('successPanel').classList.add('active');
+      btn.classList.remove('stamping'); btn.disabled = false;
+      window.__lastMailto = mailto; window.__lastBlob = blob; window.__lastName = name;
+    });
+    document.getElementById('reopenMail').addEventListener('click', ()=>{ if(window.__lastMailto) window.location.href = window.__lastMailto; });
+    document.getElementById('redownload').addEventListener('click', ()=>{ if(window.__lastBlob) downloadBlob(window.__lastBlob, window.__lastName); });
+
+    window.addEventListener('resize', ()=>{ if(state.fileType) renderStage(); });
+  }
+
+  // ================================================================
+  // ===================== SIGNER VIEW ==============================
+  // ================================================================
+  async function initSignerView(id){
+    if(!STORAGE_OK){
+      showSignerState('error', 'Este link só funciona quando aberto a partir do artifact publicado pela Claude (não como um arquivo HTML solto). Peça a quem enviou para verificar a publicação.');
+      return;
+    }
+    const doc = await loadDoc(id);
+    if(!doc){
+      showSignerState('error', 'Não encontramos este documento. Peça um novo link a quem enviou.');
+      return;
+    }
+    if(doc.fileType === 'pdf' && !LIBS_OK){
+      showSignerState('error', 'Não foi possível carregar os componentes necessários para exibir o PDF. Recarregue a página.');
+      return;
+    }
+    if(doc.status === 'signed'){
+      document.getElementById('signerAlreadyDoneDate').textContent = 'Assinado em ' + new Date(doc.signedAt).toLocaleString('pt-BR') + '.';
+      showSignerState('already');
+      return;
+    }
+
+    const sState = { doc, id, signatureDataUrl: null };
+
+    document.getElementById('signerTitle').textContent = 'Assine: ' + doc.fileName;
+    showSignerState('content');
+
+    const canvas = document.getElementById('signerCanvas');
+    const ctx = canvas.getContext('2d');
+    const stage = document.getElementById('signerStage');
+    const sigBoxEl = document.getElementById('signerSigBox');
+
+    async function renderSignerStage(){
+      const containerWidth = Math.min(document.querySelector('.signer-card').clientWidth * 0.6, 560);
+      if(doc.fileType === 'pdf'){
+        const pdfDoc = await pdfjsLib.getDocument({data: base64ToArrayBuffer(doc.fileBase64)}).promise;
+        const page = await pdfDoc.getPage(doc.placement.page || 1);
+        const naturalViewport = page.getViewport({scale:1});
+        const scale = containerWidth / naturalViewport.width;
+        const viewport = page.getViewport({scale});
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({canvasContext: ctx, viewport}).promise;
+      } else {
+        const img = new Image();
+        await new Promise(res=>{ img.onload=res; img.src=doc.fileBase64; });
+        const scale = containerWidth / img.naturalWidth;
+        canvas.width = img.naturalWidth*scale; canvas.height = img.naturalHeight*scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+      stage.style.width = canvas.width + 'px';
+      sigBoxEl.style.left = (doc.placement.xRatio*canvas.width)+'px';
+      sigBoxEl.style.top = (doc.placement.yRatio*canvas.height)+'px';
+      sigBoxEl.style.width = (doc.placement.wRatio*canvas.width)+'px';
+      sigBoxEl.style.height = (doc.placement.hRatio*canvas.height)+'px';
+    }
+    await renderSignerStage();
+
+    // signature pad
+    const padCanvas = document.getElementById('signerPadCanvas');
+    const padCtx = padCanvas.getContext('2d');
+    let padHasContent = false;
+    const sealBtn = document.getElementById('signerSealBtn');
+    function setupPad(){
+      const ratio = window.devicePixelRatio || 1;
+      padCanvas.width = padCanvas.clientWidth*ratio; padCanvas.height = padCanvas.clientHeight*ratio;
+      padCtx.scale(ratio, ratio); padCtx.lineWidth=2.4; padCtx.lineCap='round'; padCtx.strokeStyle='#101b33';
+      let drawing=false, last=null;
+      function pos(e){ const r = padCanvas.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+      padCanvas.addEventListener('pointerdown', e=>{ drawing=true; last=pos(e); padHasContent=true; sealBtn.disabled=false; });
+      padCanvas.addEventListener('pointermove', e=>{ if(!drawing) return; const p=pos(e); padCtx.beginPath(); padCtx.moveTo(last.x,last.y); padCtx.lineTo(p.x,p.y); padCtx.stroke(); last=p; });
+      window.addEventListener('pointerup', ()=>drawing=false);
+    }
+    setupPad();
+    document.getElementById('signerClearPad').addEventListener('click', ()=>{
+      padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padHasContent=false;
+      if(document.getElementById('signerTabDraw').style.display!=='none') sealBtn.disabled=true;
+    });
+    document.querySelectorAll('.stage-side .tab-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.stage-side .tab-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const isDraw = btn.dataset.stab === 'draw';
+        document.getElementById('signerTabDraw').style.display = isDraw?'block':'none';
+        document.getElementById('signerTabType').style.display = isDraw?'none':'block';
+        sealBtn.disabled = isDraw ? !padHasContent : (signerTypeInput.value.trim().length===0);
+      });
+    });
+    const signerTypeInput = document.getElementById('signerTypeInput');
+    signerTypeInput.addEventListener('input', ()=>{ sealBtn.disabled = signerTypeInput.value.trim().length===0; });
+
+    function renderTypedSignature(text){
+      const off = document.createElement('canvas'); off.width=600; off.height=220;
+      const octx = off.getContext('2d');
+      octx.fillStyle = '#101b33'; octx.font = "600 96px 'Caveat', cursive";
+      octx.textBaseline='middle'; octx.textAlign='center';
+      octx.fillText(text, off.width/2, off.height/2);
+      return off.toDataURL('image/png');
+    }
+
+    sealBtn.addEventListener('click', async ()=>{
+      sealBtn.classList.add('stamping'); sealBtn.disabled = true;
+      const isDraw = document.querySelector('.stage-side .tab-btn[data-stab="draw"]').classList.contains('active');
+      sState.signatureDataUrl = isDraw ? padCanvas.toDataURL('image/png') : renderTypedSignature(signerTypeInput.value.trim());
+
+      let finalBase64, finalBlob;
+      if(doc.fileType === 'pdf'){
+        const pdfDocLib = await PDFLib.PDFDocument.load(base64ToArrayBuffer(doc.fileBase64));
+        const pages = pdfDocLib.getPages();
+        const page = pages[(doc.placement.page||1) - 1];
+        const { width: pw, height: ph } = page.getSize();
+        const pngImage = await pdfDocLib.embedPng(sState.signatureDataUrl);
+        const sigW = doc.placement.wRatio*pw, sigH = doc.placement.hRatio*ph;
+        const x = doc.placement.xRatio*pw, y = ph - (doc.placement.yRatio*ph) - sigH;
+        page.drawImage(pngImage, {x, y, width: sigW, height: sigH});
+        const bytes = await pdfDocLib.save();
+        finalBase64 = bytesToBase64(bytes);
+        finalBlob = new Blob([bytes], {type:'application/pdf'});
+      } else {
+        const off = document.createElement('canvas'); off.width = canvas.width; off.height = canvas.height;
+        const octx = off.getContext('2d');
+        const baseImg = new Image(); await new Promise(res=>{ baseImg.onload=res; baseImg.src=doc.fileBase64; });
+        octx.drawImage(baseImg, 0, 0, off.width, off.height);
+        const sImg = new Image(); await new Promise(res=>{ sImg.onload=res; sImg.src=sState.signatureDataUrl; });
+        octx.drawImage(sImg, doc.placement.xRatio*off.width, doc.placement.yRatio*off.height, doc.placement.wRatio*off.width, doc.placement.hRatio*off.height);
+        finalBlob = await new Promise(res=>off.toBlob(res, 'image/png'));
+        finalBase64 = off.toDataURL('image/png');
+      }
+
+      doc.status = 'signed';
+      doc.signedAt = Date.now();
+      doc.signedFileBase64 = finalBase64;
+      doc.signerName = document.getElementById('signerName').value.trim() || null;
+      try{
+        await saveDoc(id, doc);
+      }catch(e){
+        console.error(e);
+      }
+
+      window.__signerFinalBlob = finalBlob;
+      window.__signerFinalName = (doc.fileName.replace(/\.(pdf|png|jpg|jpeg)$/i,'')||'documento') + '-assinado' + (doc.fileType==='pdf'?'.pdf':'.png');
+      showSignerState('done');
+    });
+
+    document.getElementById('signerDownloadCopy').addEventListener('click', ()=>{
+      if(window.__signerFinalBlob) downloadBlob(window.__signerFinalBlob, window.__signerFinalName);
+    });
+  }
+
+  function showSignerState(which, msg){
+    ['signerLoading','signerErrorBox','signerAlreadyDone','signerContent','signerDone'].forEach(elId=>{
+      document.getElementById(elId).style.display = 'none';
+    });
+    if(which==='error'){ document.getElementById('signerErrorMsg').textContent = msg||''; document.getElementById('signerErrorBox').style.display='block'; }
+    else if(which==='already'){ document.getElementById('signerAlreadyDone').style.display='block'; }
+    else if(which==='content'){ document.getElementById('signerContent').style.display='block'; }
+    else if(which==='done'){ document.getElementById('signerDone').style.display='block'; }
+  }
 })();
 </script>
 </body>
 </html>
-
