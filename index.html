@@ -365,9 +365,9 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow">Processamento local · link de assinatura remota</div>
+      <div class="eyebrow">Nuvem do Firebase · Links Compartilháveis Reais</div>
       <h1 class="display">Assine documentos com a <em>confiança de um cartório</em>, na velocidade de um clique.</h1>
-      <p class="lead">Envie o PDF, posicione o campo de assinatura e escolha: assine você mesmo agora, ou gere um link — a outra pessoa abre, já vê o documento pronto, e só assina.</p>
+      <p class="lead">Envie o PDF, posicione o campo de assinatura e gere um link real — a outra pessoa abre de qualquer lugar, já vê o documento pronto, e só assina.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="document.getElementById('workspace').scrollIntoView({behavior:'smooth'})">Começar a assinar →</button>
         <button class="btn-ghost" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})">Ver como funciona</button>
@@ -394,7 +394,7 @@
   <div class="wrap trust-grid">
     <div class="trust-item">
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></span>
-      <div><h4>Nada sai sem você saber</h4><p>O documento fica salvo no armazenamento local do navegador para o link funcionar.</p></div>
+      <div><h4>Sincronizado na Nuvem</h4><p>O documento fica salvo no banco de dados para o link funcionar remotamente.</p></div>
     </div>
     <div class="trust-item">
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg></span>
@@ -480,7 +480,7 @@
             <button class="choice-card" id="chooseOther">
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></span>
               <h4>Outra pessoa, por link</h4>
-              <p>Gere um link único: ela abre no próprio navegador, vê o documento posicionado, e assina.</p>
+              <p>Gere um link conectado ao Firebase: ela abre no próprio dispositivo, vê e assina.</p>
             </button>
           </div>
           <div class="row-actions"><button class="btn-ghost" id="backTo2fromChoice">← Voltar</button></div>
@@ -509,8 +509,8 @@
 
         <!-- PANEL 3 LINK (remote) -->
         <div class="panel" data-panel="3link">
-          <h3>Link de assinatura</h3>
-          <p class="hint">Gere um link de assinatura local. *Atenção: como roda de forma estática, o link usa o localStorage do navegador atual.*</p>
+          <h3>Link de assinatura remota</h3>
+          <p class="hint">Gere um link ativo pelo Firebase para enviar ao destinatário.</p>
           <div id="linkGenArea">
             <div class="form-grid" style="margin-bottom:20px;">
               <div class="field"><label>Nome de quem vai assinar (opcional)</label><input type="text" id="linkToName" placeholder="Nome do destinatário"></div>
@@ -537,8 +537,8 @@
           <div class="row-actions"><button class="btn-ghost" id="backTo3choiceFromLink">← Voltar</button></div>
 
           <div style="margin-top:52px;">
-            <h3 style="font-size:1.15rem;">Documentos enviados nesta sessão</h3>
-            <p class="hint" style="margin-bottom:16px;">Guardados neste navegador — clique em verificar para atualizar o status.</p>
+            <h3 style="font-size:1.15rem;">Documentos enviados</h3>
+            <p class="hint" style="margin-bottom:16px;">Sincronizados em tempo real.</p>
             <div id="sentDocsList"><p class="hint">Nenhum documento enviado ainda.</p></div>
           </div>
         </div>
@@ -583,7 +583,7 @@
   </div>
 </section>
 
-<footer><div class="wrap">Selo — assinatura de documentos, com envio local ou por link.</div></footer>
+<footer><div class="wrap">Selo — assinatura de documentos com Firebase Realtime Database.</div></footer>
 </div><!-- /mainApp -->
 
 <!-- ================= SIGNER VIEW ================= -->
@@ -633,7 +633,7 @@
       <div id="signerDone" style="display:none;">
         <div class="signer-done-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
         <h2>Documento assinado e enviado ✓</h2>
-        <p>O documento foi atualizado no seu navegador. Você já pode fechar esta janela ou salvar uma cópia.</p>
+        <p>O documento foi salvo com sucesso. Você já pode fechar esta janela ou salvar uma cópia.</p>
         <div class="row-actions"><button class="btn-ghost" id="signerDownloadCopy">Baixar uma cópia para você (opcional)</button></div>
       </div>
     </div>
@@ -642,61 +642,68 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script>
-(function(){
-  const LIBS_OK = (typeof pdfjsLib !== 'undefined') && (typeof PDFLib !== 'undefined');
-  if(typeof pdfjsLib !== 'undefined'){
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
 
-  // ================= LocalStorage substituto do window.storage do Claude =================
-  const storageMock = {
-    set: async function(key, val) { localStorage.setItem(key, val); return {value: val}; },
-    get: async function(key) { const v = localStorage.getItem(key); return v ? {value: v} : null; }
+<!-- Scripts do Firebase v10 em formato de Módulo ES -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCR_y_-0nASOmEDQMJEXXZsdoqqDzF0Bcs",
+    authDomain: "dados-14c13.firebaseapp.com",
+    projectId: "dados-14c13",
+    storageBucket: "dados-14c13.firebasestorage.app",
+    messagingSenderId: "28899182071",
+    appId: "1:28899182071:web:17e31bf5513b95ab7b9af2",
+    measurementId: "G-3RH6HW3QW4"
   };
 
-  function arrayBufferToBase64(buffer){
-    return bytesToBase64(new Uint8Array(buffer));
-  }
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Funções Utilitárias Globais / Estado
+  function arrayBufferToBase64(buffer){ return bytesToBase64(new Uint8Array(buffer)); }
   function bytesToBase64(bytes){
-    let binary = '';
-    const chunk = 0x8000;
+    let binary = ''; const chunk = 0x8000;
     for(let i=0;i<bytes.length;i+=chunk){ binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); }
     return btoa(binary);
   }
   function base64ToArrayBuffer(base64){
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
+    const binary = atob(base64); const bytes = new Uint8Array(binary.length);
     for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
     return bytes.buffer;
   }
   function randomId(){
-    const chars='abcdefghjkmnpqrstuvwxyz23456789';
-    let s=''; for(let i=0;i<12;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+    const chars='abcdefghjkmnpqrstuvwxyz23456789'; let s='';
+    for(let i=0;i<12;i++) s+=chars[Math.floor(Math.random()*chars.length)];
     return s;
   }
   function randomProtocol(){
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let s=''; for(let i=0;i<10;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s='';
+    for(let i=0;i<10;i++) s += chars[Math.floor(Math.random()*chars.length)];
     return s.slice(0,4)+'-'+s.slice(4,8)+'-'+s.slice(8);
   }
   function downloadBlob(blob, name){
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     return url;
   }
-  async function saveDoc(id, payload){ await storageMock.set('doc:'+id, JSON.stringify(payload)); }
-  async function loadDoc(id){ try{ const r = await storageMock.get('doc:'+id); return r? JSON.parse(r.value): null; }catch(e){ return null; } }
-  async function getSentDocs(){ try{ const r = await storageMock.get('sentDocs'); return r? JSON.parse(r.value): []; }catch(e){ return []; } }
-  async function addSentDoc(meta){
-    const list = await getSentDocs();
-    list.unshift(meta);
-    await storageMock.set('sentDocs', JSON.stringify(list));
+
+  // Abstração do Banco de dados com Firebase
+  async function saveDoc(id, payload) {
+    await set(ref(db, 'docs/' + id), payload);
+  }
+  async function loadDoc(id) {
+    const snapshot = await get(child(ref(db), 'docs/' + id));
+    return snapshot.exists() ? snapshot.val() : null;
+  }
+  function listenDoc(id, callback) {
+    return onValue(ref(db, 'docs/' + id), (snapshot) => {
+      callback(snapshot.exists() ? snapshot.val() : null);
+    });
   }
 
-  // Routing
+  // Controle de Roteamento (Visualização de Emissor vs Assinante)
   const params = new URLSearchParams(window.location.search);
   const signId = params.get('assinar');
 
@@ -709,7 +716,7 @@
     initSenderApp();
   }
 
-  // ================= SENDER APP =================
+  // ================= SENDER APP (PAINEL DE ENVIO) =================
   function initSenderApp(){
     const state = {
       fileType: null, fileName: '', pdfBytesForLib: null, pdfDoc: null,
@@ -748,20 +755,16 @@
 
       if(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')){
         state.fileType = 'pdf';
-        const buf1 = await file.arrayBuffer();
-        state.pdfBytesForLib = buf1.slice(0);
+        const buf1 = await file.arrayBuffer(); state.pdfBytesForLib = buf1.slice(0);
         const buf2 = buf1.slice(0);
         state.pdfDoc = await pdfjsLib.getDocument({data: buf2}).promise;
-        state.numPages = state.pdfDoc.numPages;
-        state.currentPage = 1;
+        state.numPages = state.pdfDoc.numPages; state.currentPage = 1;
       } else {
         state.fileType = 'image';
         const dataUrl = await new Promise((res)=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-        state.imageDataUrl = dataUrl;
-        const img = new Image();
+        state.imageDataUrl = dataUrl; const img = new Image();
         await new Promise(res=>{ img.onload=res; img.src=dataUrl; });
-        state.imageEl = img;
-        state.numPages = 1; state.currentPage = 1;
+        state.imageEl = img; state.numPages = 1; state.currentPage = 1;
       }
       toStep2.disabled = false;
     }
@@ -769,14 +772,10 @@
     toStep2.addEventListener('click', async ()=>{ goToStep('2', 2); await renderStage(); });
     document.getElementById('backTo1').addEventListener('click', ()=>goToStep('1', 1));
 
-    const stageCanvas = document.getElementById('pdfCanvas');
-    const stageCtx = stageCanvas.getContext('2d');
-    const docStage = document.getElementById('docStage');
-    const stageInstructions = document.getElementById('stageInstructions');
-    const sigBox = document.getElementById('sigBox');
-    const sigHandle = document.getElementById('sigHandle');
-    const pageNav = document.getElementById('pageNav');
-    const pageLabel = document.getElementById('pageLabel');
+    const stageCanvas = document.getElementById('pdfCanvas'); const stageCtx = stageCanvas.getContext('2d');
+    const docStage = document.getElementById('docStage'); const stageInstructions = document.getElementById('stageInstructions');
+    const sigBox = document.getElementById('sigBox'); const sigHandle = document.getElementById('sigHandle');
+    const pageNav = document.getElementById('pageNav'); const pageLabel = document.getElementById('pageLabel');
     const toStep3 = document.getElementById('toStep3');
 
     async function renderStage(){
@@ -784,8 +783,7 @@
       if(state.fileType === 'pdf'){
         const page = await state.pdfDoc.getPage(state.currentPage);
         const naturalViewport = page.getViewport({scale:1});
-        const scale = containerWidth / naturalViewport.width;
-        const viewport = page.getViewport({scale});
+        const scale = containerWidth / naturalViewport.width; const viewport = page.getViewport({scale});
         stageCanvas.width = viewport.width; stageCanvas.height = viewport.height;
         await page.render({canvasContext: stageCtx, viewport}).promise;
         pageNav.style.display = state.numPages>1 ? 'flex' : 'none';
@@ -793,15 +791,13 @@
         document.getElementById('prevPage').disabled = state.currentPage<=1;
         document.getElementById('nextPage').disabled = state.currentPage>=state.numPages;
       } else {
-        const img = state.imageEl;
-        const scale = containerWidth / img.naturalWidth;
+        const img = state.imageEl; const scale = containerWidth / img.naturalWidth;
         stageCanvas.width = img.naturalWidth * scale; stageCanvas.height = img.naturalHeight * scale;
         stageCtx.drawImage(img, 0, 0, stageCanvas.width, stageCanvas.height);
         pageNav.style.display = 'none';
       }
       docStage.style.width = stageCanvas.width + 'px';
-      sigBox.classList.remove('placed');
-      stageInstructions.style.display = 'flex';
+      sigBox.classList.remove('placed'); stageInstructions.style.display = 'flex';
     }
 
     document.getElementById('prevPage').addEventListener('click', async ()=>{ if(state.currentPage>1){ state.currentPage--; state.placement=null; toStep3.disabled=true; await renderStage(); }});
@@ -838,7 +834,7 @@
         sigBox.style.width=w+'px'; sigBox.style.height=h+'px'; savePlacement();
       }
     });
-    window.addEventListener('pointerup', ()={ dragging=false; resizing=false; });
+    window.addEventListener('pointerup', ()=>{ dragging=false; resizing=false; });
 
     function savePlacement(){
       state.placement = {
@@ -857,10 +853,8 @@
     document.getElementById('backTo3choiceFromLink').addEventListener('click', ()=>{ stopPolling(); goToStep('3choice', 3); });
     document.getElementById('backTo3choiceFromSend').addEventListener('click', ()=>goToStep('3choice', 3));
 
-    const padCanvas = document.getElementById('padCanvas');
-    const padCtx = padCanvas.getContext('2d');
-    const toStep4 = document.getElementById('toStep4');
-    let padHasContent = false, padReady = false;
+    const padCanvas = document.getElementById('padCanvas'); const padCtx = padCanvas.getContext('2d');
+    const toStep4 = document.getElementById('toStep4'); let padHasContent = false, padReady = false;
 
     function setupPad(){
       if(padReady) return; padReady = true;
@@ -898,10 +892,8 @@
     });
 
     function renderTypedSignature(text){
-      const off = document.createElement('canvas'); off.width=600; off.height=220;
-      const octx = off.getContext('2d');
-      octx.fillStyle = '#101b33'; octx.font = "600 96px 'Caveat', cursive";
-      octx.textBaseline='middle'; octx.textAlign='center';
+      const off = document.createElement('canvas'); off.width=600; off.height=220; const octx = off.getContext('2d');
+      octx.fillStyle = '#101b33'; octx.font = "600 96px 'Caveat', cursive"; octx.textBaseline='middle'; octx.textAlign='center';
       octx.fillText(text, off.width/2, off.height/2);
       return off.toDataURL('image/png');
     }
@@ -910,23 +902,15 @@
     const linkGenWarning = document.getElementById('linkGenWarning');
     const linkResultArea = document.getElementById('linkResultArea');
     const linkGenArea = document.getElementById('linkGenArea');
-    let currentLinkId = null, pollTimer = null;
+    let currentLinkId = null, unbindListNode = null;
 
     generateLinkBtn.addEventListener('click', async ()=>{
       if(!state.placement){
         linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Posicione o campo antes.'; return;
       }
-      generateLinkBtn.disabled = true; generateLinkBtn.textContent = 'Gerando…';
+      generateLinkBtn.disabled = true; generateLinkBtn.textContent = 'Enviando ao Firebase…';
       try{
         let fileBase64 = state.fileType === 'pdf' ? arrayBufferToBase64(state.pdfBytesForLib) : state.imageDataUrl;
-        
-        // Limitação do LocalStorage é de ~5MB totais
-        if(fileBase64.length > 2.5*1024*1024){
-          linkGenWarning.style.display='block';
-          linkGenWarning.textContent = 'Arquivo muito pesado para o LocalStorage de modo estático (Limite recomendado de até 2MB).';
-          generateLinkBtn.disabled=false; return;
-        }
-
         const id = randomId();
         const payload = {
           fileType: state.fileType, fileName: state.fileName, fileBase64,
@@ -935,22 +919,27 @@
           toName: document.getElementById('linkToName').value.trim(),
           toEmail: document.getElementById('linkToEmail').value.trim()
         };
-        await saveDoc(id, payload);
-        await addSentDoc({id, fileName: state.fileName, createdAt: payload.createdAt, toName: payload.toName, toEmail: payload.toEmail});
-        currentLinkId = id;
         
+        await saveDoc(id, payload);
+        
+        // Mantém uma lista local de IDs criados apenas para listagem do painel do emissor
+        let localCreated = JSON.parse(localStorage.getItem('my_created_docs') || '[]');
+        localCreated.unshift({id, fileName: state.fileName, createdAt: payload.createdAt});
+        localStorage.setItem('my_created_docs', JSON.stringify(localCreated));
+
+        currentLinkId = id;
         const link = window.location.origin + window.location.pathname + '?assinar=' + id;
         document.getElementById('linkDisplay').textContent = link;
         document.getElementById('linkCreatedAt').textContent = new Date(payload.createdAt).toLocaleString('pt-BR');
         document.getElementById('linkStatus').textContent = 'Aguardando assinatura…';
         document.getElementById('statusDot').classList.remove('signed');
         document.getElementById('linkDownloadArea').style.display = 'none';
-        linkResultArea.style.display = 'block';
-        linkGenArea.style.display = 'none';
+        linkResultArea.style.display = 'block'; linkGenArea.style.display = 'none';
+        
         startPolling(id);
         refreshSentDocsList();
       } catch(err){
-        linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Erro ao salvar localmente.';
+        linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Erro ao salvar dados no Firebase.';
         console.error(err);
       } finally {
         generateLinkBtn.disabled=false; generateLinkBtn.textContent='Gerar link de assinatura';
@@ -965,21 +954,20 @@
       });
     });
 
-    document.getElementById('checkStatusBtn').addEventListener('click', ()=>{ if(currentLinkId) refreshLinkStatus(currentLinkId); });
-
-    async function refreshLinkStatus(id){
-      const doc = await loadDoc(id);
-      if(!doc) return;
-      if(doc.status === 'signed'){
-        document.getElementById('linkStatus').textContent = 'Assinado em ' + new Date(doc.signedAt).toLocaleString('pt-BR') + (doc.signerName? ' por '+doc.signerName : '');
-        document.getElementById('statusDot').classList.add('signed');
-        document.getElementById('linkDownloadArea').style.display = 'flex';
-        document.getElementById('downloadSignedBtn').onclick = ()=>downloadSignedDoc(doc);
-        stopPolling();
-      }
+    function startPolling(id){
+      stopPolling();
+      unbindListNode = listenDoc(id, (doc) => {
+        if(!doc) return;
+        if(doc.status === 'signed'){
+          document.getElementById('linkStatus').textContent = 'Assinado em ' + new Date(doc.signedAt).toLocaleString('pt-BR') + (doc.signerName? ' por '+doc.signerName : '');
+          document.getElementById('statusDot').classList.add('signed');
+          document.getElementById('linkDownloadArea').style.display = 'flex';
+          document.getElementById('downloadSignedBtn').onclick = ()=>downloadSignedDoc(doc);
+          stopPolling();
+        }
+      });
     }
-    function startPolling(id){ stopPolling(); pollTimer = setInterval(()=>refreshLinkStatus(id), 4000); }
-    function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+    function stopPolling(){ if(unbindListNode){ unbindListNode(); unbindListNode=null; } }
 
     function downloadSignedDoc(doc){
       let blob, name;
@@ -995,7 +983,7 @@
     }
 
     async function refreshSentDocsList(){
-      const list = await getSentDocs();
+      const list = JSON.parse(localStorage.getItem('my_created_docs') || '[]');
       const el = document.getElementById('sentDocsList');
       if(list.length === 0){ el.innerHTML = '<p class="hint">Nenhum documento enviado ainda.</p>'; return; }
       el.innerHTML = '';
@@ -1008,7 +996,7 @@
         
         loadDoc(item.id).then(doc=>{
           const pill = row.querySelector(`[data-status-for="${item.id}"]`);
-          if(!doc){ pill.querySelector('span:last-child').textContent = 'N/A'; return; }
+          if(!doc){ pill.querySelector('span:last-child').textContent = 'Removido'; return; }
           if(doc.status === 'signed'){
             pill.querySelector('.status-dot').classList.add('signed');
             pill.querySelector('span:last-child').textContent = 'assinado';
@@ -1059,10 +1047,10 @@
     window.addEventListener('resize', ()=>{ if(state.fileType) renderStage(); });
   }
 
-  // ================= SIGNER VIEW =================
+  // ================= SIGNER VIEW (TELA DE QUEM ABRE O LINK) =================
   async function initSignerView(id){
     const doc = await loadDoc(id);
-    if(!doc){ showSignerState('error', 'Documento expirado ou não encontrado.'); return; }
+    if(!doc){ showSignerState('error', 'Documento não encontrado na base de dados.'); return; }
     if(doc.status === 'signed'){
       document.getElementById('signerAlreadyDoneDate').textContent = 'Assinado em ' + new Date(doc.signedAt).toLocaleString('pt-BR') + '.';
       showSignerState('already'); return;
@@ -1158,8 +1146,10 @@
         finalBase64 = off.toDataURL('image/png');
       }
 
+      // Atualiza o registro no Firebase Realtime Database
       doc.status = 'signed'; doc.signedAt = Date.now(); doc.signedFileBase64 = finalBase64;
       doc.signerName = document.getElementById('signerName').value.trim() || null;
+      
       await saveDoc(id, doc);
 
       window.__signerFinalBlob = finalBlob;
@@ -1181,7 +1171,6 @@
     else if(which==='content'){ document.getElementById('signerContent').style.display='block'; }
     else if(which==='done'){ document.getElementById('signerDone').style.display='block'; }
   }
-})();
 </script>
 </body>
 </html>
