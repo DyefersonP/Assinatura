@@ -643,7 +643,8 @@
 <!-- Scripts do Firebase v10 em formato de Módulo ES -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCR_y_-0nASOmEDQMJEXXZsdoqqDzF0Bcs",
@@ -657,6 +658,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const storage = getStorage(app);
 
   // Funções Utilitárias Globais / Estado
   function arrayBufferToBase64(buffer){ return bytesToBase64(new Uint8Array(buffer)); }
@@ -718,7 +720,7 @@
     const state = {
       fileType: null, fileName: '', pdfBytesForLib: null, pdfDoc: null,
       numPages: 1, currentPage: 1, imageEl: null, imageDataUrl: null,
-      placement: null, signatureDataUrl: null
+      placement: null, signatureDataUrl: null, originalBlob: null
     };
 
     function goToStep(panelKey, railStep){
@@ -747,6 +749,7 @@
 
     async function handleFile(file){
       state.fileName = file.name;
+      state.originalBlob = file;
       fileChipArea.innerHTML = `<div class="file-chip">📄 ${file.name} <button id="clearFile">✕</button></div>`;
       document.getElementById('clearFile').addEventListener('click', ()=>{ fileChipArea.innerHTML=''; toStep2.disabled=true; state.fileType=null; });
 
@@ -906,20 +909,41 @@
         linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Posicione o campo antes.'; return;
       }
       generateLinkBtn.disabled = true; generateLinkBtn.textContent = 'Enviando ao Firebase…';
+      linkGenWarning.style.display='none';
+
       try{
-        let fileBase64 = state.fileType === 'pdf' ? arrayBufferToBase64(state.pdfBytesForLib) : state.imageDataUrl;
         const id = randomId();
+        
+        // 1. Faz o upload do arquivo real para o Firebase Storage
+        const fileRef = sRef(storage, `documentos_originais/${id}_${state.fileName}`);
+        let uploadBlobData = state.originalBlob;
+        
+        // Caso o blob original tenha se perdido em alguma navegação secundária, recria pelo base64 temporário da imagem
+        if (!uploadBlobData && state.fileType === 'image') {
+          const parts = state.imageDataUrl.split(',');
+          uploadBlobData = new Blob([base64ToArrayBuffer(parts[1] || parts[0])], {type: 'image/png'});
+        }
+
+        const snapshotFile = await uploadBytes(fileRef, uploadBlobData);
+        const fileCloudUrl = await getDownloadURL(snapshotFile.ref);
+
+        // 2. Monta o payload salvando apenas a URL leve em vez da Base64 massiva
         const payload = {
-          fileType: state.fileType, fileName: state.fileName, fileBase64,
-          placement: state.placement, status: 'pending', createdAt: Date.now(),
-          signedAt: null, signedFileBase64: null, signerName: null,
+          fileType: state.fileType, 
+          fileName: state.fileName, 
+          fileBase64: fileCloudUrl, // Agora armazena a URL HTTP do Storage para o banco aceitar instantaneamente
+          placement: state.placement, 
+          status: 'pending', 
+          createdAt: Date.now(),
+          signedAt: null, 
+          signedFileBase64: null, 
+          signerName: null,
           toName: document.getElementById('linkToName').value.trim(),
           toEmail: document.getElementById('linkToEmail').value.trim()
         };
         
         await saveDoc(id, payload);
         
-        // Mantém uma lista local de IDs criados apenas para listagem do painel do emissor
         let localCreated = JSON.parse(localStorage.getItem('my_created_docs') || '[]');
         localCreated.unshift({id, fileName: state.fileName, createdAt: payload.createdAt});
         localStorage.setItem('my_created_docs', JSON.stringify(localCreated));
@@ -936,7 +960,8 @@
         startPolling(id);
         refreshSentDocsList();
       } catch(err){
-        linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Erro ao salvar dados no Firebase.';
+        linkGenWarning.style.display='block'; 
+        linkGenWarning.textContent = 'Erro ao salvar dados no Firebase Storage/Database.';
         console.error(err);
       } finally {
         generateLinkBtn.disabled=false; generateLinkBtn.textContent='Gerar link de assinatura';
@@ -1053,35 +1078,49 @@
       showSignerState('already'); return;
     }
 
-    const sState = { doc, id, signatureDataUrl: null };
+    const sState = { doc, id, signatureDataUrl: null, fileBuffer: null };
     document.getElementById('signerTitle').textContent = 'Assine: ' + doc.fileName;
     showSignerState('content');
 
     const canvas = document.getElementById('signerCanvas'); const ctx = canvas.getContext('2d');
     const stage = document.getElementById('signerStage'); const sigBoxEl = document.getElementById('signerSigBox');
 
-    async function renderSignerStage(){
-      const containerWidth = Math.min(document.querySelector('.signer-card').clientWidth * 0.6, 560);
+    // Baixa o arquivo do Storage em formato de ArrayBuffer ou carrega como imagem nativa através da URL salva
+    try {
       if(doc.fileType === 'pdf'){
-        const pdfDoc = await pdfjsLib.getDocument({data: base64ToArrayBuffer(doc.fileBase64)}).promise;
+        const res = await fetch(doc.fileBase64);
+        sState.fileBuffer = await res.arrayBuffer();
+        const pdfDoc = await pdfjsLib.getDocument({data: sState.fileBuffer}).promise;
         const page = await pdfDoc.getPage(doc.placement.page || 1);
         const naturalViewport = page.getViewport({scale:1});
+        const containerWidth = Math.min(document.querySelector('.signer-card').clientWidth * 0.6, 560);
         const scale = containerWidth / naturalViewport.width; const viewport = page.getViewport({scale});
         canvas.width = viewport.width; canvas.height = viewport.height;
         await page.render({canvasContext: ctx, viewport}).promise;
       } else {
-        const img = new Image(); await new Promise(res=>{ img.onload=res; img.src=doc.fileBase64; });
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Evita problemas de CORS do canvas com o Storage
+        await new Promise((res, rej)=>{ 
+          img.onload=res; 
+          img.onerror=rej;
+          img.src=doc.fileBase64; 
+        });
+        const containerWidth = Math.min(document.querySelector('.signer-card').clientWidth * 0.6, 560);
         const scale = containerWidth / img.naturalWidth;
         canvas.width = img.naturalWidth*scale; canvas.height = img.naturalHeight*scale;
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        sState.imgNativeElement = img;
       }
       stage.style.width = canvas.width + 'px';
       sigBoxEl.style.left = (doc.placement.xRatio*canvas.width)+'px';
       sigBoxEl.style.top = (doc.placement.yRatio*canvas.height)+'px';
       sigBoxEl.style.width = (doc.placement.wRatio*canvas.width)+'px';
       sigBoxEl.style.height = (doc.placement.hRatio*canvas.height)+'px';
+    } catch (e) {
+      console.error(e);
+      showSignerState('error', 'Falha ao baixar arquivo base do servidor Firebase.');
+      return;
     }
-    await renderSignerStage();
 
     const padCanvas = document.getElementById('signerPadCanvas'); const padCtx = padCanvas.getContext('2d');
     let padHasContent = false; const sealBtn = document.getElementById('signerSealBtn');
@@ -1123,7 +1162,7 @@
 
       let finalBase64, finalBlob;
       if(doc.fileType === 'pdf'){
-        const pdfDocLib = await PDFLib.PDFDocument.load(base64ToArrayBuffer(doc.fileBase64));
+        const pdfDocLib = await PDFLib.PDFDocument.load(sState.fileBuffer);
         const pages = pdfDocLib.getPages(); const page = pages[(doc.placement.page||1) - 1];
         const { width: pw, height: ph } = page.getSize();
         const pngImage = await pdfDocLib.embedPng(sState.signatureDataUrl);
@@ -1135,15 +1174,14 @@
       } else {
         const off = document.createElement('canvas'); off.width = canvas.width; off.height = canvas.height;
         const octx = off.getContext('2d');
-        const baseImg = new Image(); await new Promise(res=>{ baseImg.onload=res; baseImg.src=doc.fileBase64; });
-        octx.drawImage(baseImg, 0, 0, off.width, off.height);
+        octx.drawImage(sState.imgNativeElement, 0, 0, off.width, off.height);
         const sImg = new Image(); await new Promise(res=>{ sImg.onload=res; sImg.src=sState.signatureDataUrl; });
         octx.drawImage(sImg, doc.placement.xRatio*off.width, doc.placement.yRatio*off.height, doc.placement.wRatio*off.width, doc.placement.hRatio*off.height);
         finalBlob = await new Promise(res=>off.toBlob(res, 'image/png'));
         finalBase64 = off.toDataURL('image/png');
       }
 
-      // Atualiza o registro no Firebase Realtime Database
+      // Atualiza o registro final no Firebase Realtime Database
       doc.status = 'signed'; doc.signedAt = Date.now(); doc.signedFileBase64 = finalBase64;
       doc.signerName = document.getElementById('signerName').value.trim() || null;
       
