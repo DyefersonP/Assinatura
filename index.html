@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Selo — assine documentos com confiança</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink-950:#0c1526;
@@ -908,30 +908,43 @@
       if(!state.placement){
         linkGenWarning.style.display='block'; linkGenWarning.textContent = 'Posicione o campo antes.'; return;
       }
-      generateLinkBtn.disabled = true; generateLinkBtn.textContent = 'Enviando ao Firebase…';
+      
+      // Resgata o arquivo diretamente do elemento HTML de input para garantir que o binário exista intacto
+      let targetFile = fileInput.files[0] || state.originalBlob;
+      if(!targetFile && state.fileType === 'image' && state.imageDataUrl) {
+        try {
+          const parts = state.imageDataUrl.split(',');
+          targetFile = new Blob([base64ToArrayBuffer(parts[1] || parts[0])], {type: 'image/png'});
+        } catch(e) {
+          console.error("Erro ao converter imagem de fallback:", e);
+        }
+      }
+
+      if(!targetFile) {
+        linkGenWarning.style.display='block'; 
+        linkGenWarning.textContent = 'Arquivo de origem perdido. Volte ao Passo 1 e envie o arquivo novamente.'; 
+        return;
+      }
+
+      generateLinkBtn.disabled = true; 
+      generateLinkBtn.textContent = 'Enviando ao Firebase…';
       linkGenWarning.style.display='none';
 
       try{
         const id = randomId();
         
-        // 1. Faz o upload do arquivo real para o Firebase Storage
+        // Etapa 1: Upload no Firebase Storage
         const fileRef = sRef(storage, `documentos_originais/${id}_${state.fileName}`);
-        let uploadBlobData = state.originalBlob;
+        const snapshotFile = await uploadBytes(fileRef, targetFile);
         
-        // Caso o blob original tenha se perdido em alguma navegação secundária, recria pelo base64 temporário da imagem
-        if (!uploadBlobData && state.fileType === 'image') {
-          const parts = state.imageDataUrl.split(',');
-          uploadBlobData = new Blob([base64ToArrayBuffer(parts[1] || parts[0])], {type: 'image/png'});
-        }
-
-        const snapshotFile = await uploadBytes(fileRef, uploadBlobData);
+        // Etapa 2: Pegar link público gerado
         const fileCloudUrl = await getDownloadURL(snapshotFile.ref);
 
-        // 2. Monta o payload salvando apenas a URL leve em vez da Base64 massiva
+        // Etapa 3: Montar Payload leve sem o Base64 massivo
         const payload = {
           fileType: state.fileType, 
           fileName: state.fileName, 
-          fileBase64: fileCloudUrl, // Agora armazena a URL HTTP do Storage para o banco aceitar instantaneamente
+          fileBase64: fileCloudUrl, 
           placement: state.placement, 
           status: 'pending', 
           createdAt: Date.now(),
@@ -942,6 +955,7 @@
           toEmail: document.getElementById('linkToEmail').value.trim()
         };
         
+        // Etapa 4: Gravar no Realtime Database
         await saveDoc(id, payload);
         
         let localCreated = JSON.parse(localStorage.getItem('my_created_docs') || '[]');
@@ -959,12 +973,15 @@
         
         startPolling(id);
         refreshSentDocsList();
+        alert("Link gerado com sucesso!");
       } catch(err){
         linkGenWarning.style.display='block'; 
-        linkGenWarning.textContent = 'Erro ao salvar dados no Firebase Storage/Database.';
-        console.error(err);
+        linkGenWarning.textContent = `Erro crítico no Firebase: ${err.message || err}`;
+        console.error("Erro completo:", err);
+        alert(`Ocorreu um erro ao processar seu arquivo no Firebase:\n\n${err.message || err}`);
       } finally {
-        generateLinkBtn.disabled=false; generateLinkBtn.textContent='Gerar link de assinatura';
+        generateLinkBtn.disabled=false; 
+        generateLinkBtn.textContent='Gerar link de assinatura';
       }
     });
 
@@ -1085,7 +1102,6 @@
     const canvas = document.getElementById('signerCanvas'); const ctx = canvas.getContext('2d');
     const stage = document.getElementById('signerStage'); const sigBoxEl = document.getElementById('signerSigBox');
 
-    // Baixa o arquivo do Storage em formato de ArrayBuffer ou carrega como imagem nativa através da URL salva
     try {
       if(doc.fileType === 'pdf'){
         const res = await fetch(doc.fileBase64);
@@ -1099,7 +1115,7 @@
         await page.render({canvasContext: ctx, viewport}).promise;
       } else {
         const img = new Image();
-        img.crossOrigin = "anonymous"; // Evita problemas de CORS do canvas com o Storage
+        img.crossOrigin = "anonymous"; 
         await new Promise((res, rej)=>{ 
           img.onload=res; 
           img.onerror=rej;
@@ -1181,7 +1197,6 @@
         finalBase64 = off.toDataURL('image/png');
       }
 
-      // Atualiza o registro final no Firebase Realtime Database
       doc.status = 'signed'; doc.signedAt = Date.now(); doc.signedFileBase64 = finalBase64;
       doc.signerName = document.getElementById('signerName').value.trim() || null;
       
